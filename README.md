@@ -114,6 +114,6 @@
         }
     }));
 
-     $.getScript("https://rawgit.com/Yemasthui/basicBot/master/basicBot.js", extend);
+     $.getScript("hthttps://rawgit.com/leo2301/BasicBotLucaSubz/master/README.md extend);
 
 }).call(this);
