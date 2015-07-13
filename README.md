@@ -1,25 +1,21 @@
 (function () {
 
-    //Change this to your GitHub username so you don't have to modify so many things.
-    var fork = "Yemasthui";
+     fork = "Lucasubz";
 
-    //Define our function responsible for extending the bot.
+    
     function extend() {
         //If the bot hasn't been loaded properly, try again in 1 second(s).
         if (!window.bot) {
             return setTimeout(extend, 1 * 1000);
         }
 
-        //Precaution to make sure it is assigned properly.
+       
         var bot = window.bot;
 
         //Load custom settings set below
         bot.retrieveSettings();
 
-        /*
-         Extend the bot here, either by calling another function or here directly.
-         Model code for a bot command:
-
+       
          bot.commands.commandCommand = {
          command: 'cmd',
          rank: 'user/bouncer/mod/manager',
@@ -48,16 +44,15 @@
             }
         };
 
-        //Load the chat package again to account for any changes
+       
         bot.loadChat();
 
     }
 
-    //Change the bots default settings and make sure they are loaded on launch
-
+    
     localStorage.setItem("basicBotsettings", JSON.stringify({
-        botName: "basicBot",
-        language: "english",
+        botName: "PirataBot",
+        language:"portugues",
         chatLink: "https://rawgit.com/Yemasthui/basicBot/master/lang/en.json",
         startupCap: 1, // 1-200
         startupVolume: 0, // 0-100
@@ -119,7 +114,6 @@
         }
     }));
 
-    //Start the bot and extend it when it has loaded.
-    $.getScript("https://rawgit.com/Yemasthui/basicBot/master/basicBot.js", extend);
+     $.getScript("https://rawgit.com/Yemasthui/basicBot/master/basicBot.js", extend);
 
 }).call(this);
