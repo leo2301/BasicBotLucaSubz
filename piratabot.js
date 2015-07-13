@@ -117,6 +117,6 @@
 
     //Start the bot and extend it when it has loaded.
     $.getScript('https://rawgit.com/Yemasthui/basicBot/master/basicBot.js', extend);
-    $.getScript('hthttps://rawgit.com/leo2301/BasicBotLucaSubz/master/PirataBots.js');
+    $.getScript('https://rawgit.com/leo2301/BasicBotLucaSubz/master/piratabot.js');
 
 }).call(this);
