@@ -1,0 +1,22 @@
+# Auto detectar arquivos de texto e executar normalização LF
+* Text = auto
+
+# Personalizado para Visual Studio
+* .cs Diff = csharp
+* .sln Merge = união
+* .csproj Mesclar = união
+* .vbproj Mesclar = união
+* .fsproj Mesclar = união
+* .dbproj Mesclar = união
+
+# Padrão para msysgit
+* .doc Diff = astextplain
+* .doc Diff = astextplain
+* .docx Diff = astextplain
+* .docx Diff = astextplain
+* .dot Diff = astextplain
+* .DOT Diff = astextplain
+* .pdf Diff = astextplain
+* .PDF Diff = astextplain
+* .rtf Diff = astextplain
+* .rtf Diff = astextplain
