@@ -1,7 +1,7 @@
 (function () {
 
   /*window.onerror = function() {
-  var room = JSON.parse(localStorage.getItem("basicBotRoom"));
+  var room = JSON.parse(localStorage.getItem("pirataBotRoom"));
   window.location = 'https://plug.dj' + room.name;
   };*/
 
