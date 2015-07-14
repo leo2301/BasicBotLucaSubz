@@ -1,179 +1,179 @@
-(function () {
+(Function () {
 
-  /*window.onerror = function() {
-  var room = JSON.parse(localStorage.getItem("pirataBotRoom"));
-  window.location = 'https://plug.dj' + room.name;
-  };*/
+  /*window.onerror = function () {
+  sala de var = JSON.parse (localStorage.getItem ("pirataBotRoom"));
+  window.location = "https://plug.dj '+ room.name;
+  }; * /
 
-  API.getWaitListPosition = function(id){
-    if(typeof id === 'undefined' || id === null){
-      id = API.getUser().id;
+  API.getWaitListPosition = function (id) {
+    if (id typeof === 'indefinido' || id === null) {
+      id = API.getUser () id.;
     }
-    var wl = API.getWaitList();
-    for(var i = 0; i < wl.length; i++){
-      if(wl[i].id === id){
-        return i;
+    var wl = API.getWaitList ();
+    for (var i = 0; i <wl.length; i ++) {
+      if (WL id [i] .id ===) {
+        voltar i;
       }
     }
-    return -1;
+    retornar -1;
   };
 
-  var kill = function () {
-    clearInterval(pirataBot.room.autodisableInterval);
-    clearInterval(pirataBot.room.afkInterval);
-    pirataBot.status = false;
+  var matança = function () {
+    clearInterval (basicBot.room.autodisableInterval);
+    clearInterval (basicBot.room.afkInterval);
+    basicBot.status = false;
   };
 
-  // This socket server is used solely for statistical and troubleshooting purposes.
-  // This server may not always be up, but will be used to get live data at any given time.
+  // Este servidor de soquete é usado exclusivamente para fins estatísticos e de resolução de problemas.
+  // Este servidor não pode ser sempre para cima, mas vai ser usado para obter dados em tempo real em qualquer momento.
 
-  var socket = function () {
-    function loadSocket() {
-      SockJS.prototype.msg = function(a){this.send(JSON.stringify(a))};
-      sock = new SockJS('https://socket-bnzi.c9.io/pirataBot');
-      sock.onopen = function() {
-        console.log('Connected to socket!');
-        sendToSocket();
+  var soquete = function () {
+    loadSocket função () {
+      SockJS.prototype.msg = function (a) {this.send (JSON.stringify (a))};
+      meias = new SockJS ('https://socket-bnzi.c9.io/basicbot');
+      sock.onopen = function () {
+        console.log ('ligado à tomada!');
+        sendToSocket ();
       };
-      sock.onclose = function() {
-        console.log('Disconnected from socket, reconnecting every minute ..');
-        var reconnect = setTimeout(function(){ loadSocket() }, 60 * 1000);
+      sock.onclose = function () {
+        console.log ('desligado da tomada, reconectando a cada minuto ..');
+        var reconexão = setTimeout (function () {loadSocket ()}, 60 * 1000);
       };
-      sock.onmessage = function(broadcast) {
+      sock.onmessage = function (broadcast) {
         var rawBroadcast = broadcast.data;
-        var broadcastMessage = rawBroadcast.replace(/["\\]+/g, '');
-        API.chatLog(broadcastMessage);
-        console.log(broadcastMessage);
+        var BroadcastMessage = rawBroadcast.replace (/ ["\\] + / g, '');
+        API.chatLog (BroadcastMessage);
+        console.log (BroadcastMessage);
       };
     }
-    if (typeof SockJS == 'undefined') {
-      $.getScript('https://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js', loadSocket);
-    } else loadSocket();
+    if (typeof SockJS == 'indefinido') {
+      .getScript $ ('Https://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js', loadSocket);
+    } Else loadSocket ();
   }
 
   var sendToSocket = function () {
-    var pirataBotSettings = pirataBot.settings;
-    var pirataBotRoom = pirataBot.room;
-    var pirataBotInfo = {
-      time: Date.now(),
-      version: pirataBot.version
+    basicBotSettings var = basicBot.settings;
+    var basicBotRoom = basicBot.room;
+    var = {basicBotInfo
+      tempo: Date.now (),
+      versão: basicBot.version
     };
-    var data = {users:API.getUsers(),userinfo:API.getUser(),room:location.pathname,pirataBotSettings:pirataBotSettings,pirataBotRoom:pirataBotRoom,pirataBotInfo:pirataBotInfo};
-    return sock.msg(data);
+    var data = {users:API.getUsers(),userinfo:API.getUser(),room:location.pathname,basicBotSettings:basicBotSettings,basicBotRoom:basicBotRoom,basicBotInfo:basicBotInfo};
+    retornar sock.msg (dados);
   };
 
   var storeToStorage = function () {
-    localStorage.setItem("pirataBotsettings", JSON.stringify(pirataBot.settings));
-    localStorage.setItem("pirataBotRoom", JSON.stringify(pirataBot.room));
-    var pirataBotStorageInfo = {
-      time: Date.now(),
-      stored: true,
-      version: pirataBot.version
+    localStorage.setItem ("basicBotsettings", JSON.stringify basicBot.settings ());
+    localStorage.setItem ("basicBotRoom", JSON.stringify (basicBot.room));
+    var = {basicBotStorageInfo
+      tempo: Date.now (),
+      armazenado: true,
+      versão: basicBot.version
     };
-    localStorage.setItem("pirataBotStorageInfo", JSON.stringify(pirataBotStorageInfo));
+    localStorage.setItem ("basicBotStorageInfo", JSON.stringify (basicBotStorageInfo));
 
   };
 
   var subChat = function (chat, obj) {
-    if (typeof chat === "undefined") {
-      API.chatLog("There is a chat text missing.");
-      console.log("There is a chat text missing.");
-      return "[Error] No text message found.";
+    if (typeof === bate-papo "undefined") {
+      API.chatLog ("Há falta de um texto de bate-papo.");
+      console.log ("Há falta de um texto de bate-papo.");
+      retorno "[erro] Nenhuma mensagem de texto encontrado.";
 
-      // TODO: Get missing chat messages from source.
+      // TODO: Obter faltando mensagens de chat a partir da fonte.
     }
-    var lit = '%%';
-    for (var prop in obj) {
-      chat = chat.replace(lit + prop.toUpperCase() + lit, obj[prop]);
+    var iluminado = '%%';
+    for (var prop em obj) {
+      conversar = chat.replace (lit + prop.toUpperCase () + aceso, obj [prop]);
     }
-    return chat;
+    retornar conversar;
   };
 
   var loadChat = function (cb) {
-    if (!cb) cb = function () {
+    if (cb!) cb = function () {
     };
-    $.get("https://rawgit.com/Yemasthui/pirataBot/master/lang/langIndex.json", function (json) {
-      var link = pirataBot.chatLink;
-      if (json !== null && typeof json !== "undefined") {
+    $ .get ("Https://rawgit.com/Yemasthui/basicBot/master/lang/langIndex.json", function (JSON) {
+      ligação var = basicBot.chatLink;
+      if (json! == null && typeof json! == "undefined") {
         langIndex = json;
-        link = langIndex[pirataBot.settings.language.toLowerCase()];
-        if (pirataBot.settings.chatLink !== pirataBot.chatLink) {
-          link = pirataBot.settings.chatLink;
+        link = langIndex [basicBot.settings.language.toLowerCase ()];
+        se (basicBot.settings.chatLink! == basicBot.chatLink) {
+          link = basicBot.settings.chatLink;
         }
-        else {
-          if (typeof link === "undefined") {
-            link = pirataBot.chatLink;
+        outro {
+          if (typeof ligação === "undefined") {
+            link = basicBot.chatLink;
           }
         }
-        $.get(link, function (json) {
-          if (json !== null && typeof json !== "undefined") {
-            if (typeof json === "string") json = JSON.parse(json);
-            pirataBot.chat = json;
-            cb();
+        $ .get (Link, função (JSON) {
+          if (json! == null && typeof json! == "undefined") {
+            if (typeof JSON === "string") json = JSON.parse (JSON);
+            basicBot.chat = json;
+            cb ();
           }
         });
       }
-      else {
-        $.get(pirataBot.chatLink, function (json) {
-          if (json !== null && typeof json !== "undefined") {
-            if (typeof json === "string") json = JSON.parse(json);
-            pirataBot.chat = json;
-            cb();
+      outro {
+        $ .get (BasicBot.chatLink, função (JSON) {
+          if (json! == null && typeof json! == "undefined") {
+            if (typeof JSON === "string") json = JSON.parse (JSON);
+            basicBot.chat = json;
+            cb ();
           }
         });
       }
     });
   };
 
-  var retrieveSettings = function () {
-    var settings = JSON.parse(localStorage.getItem("pirataBotsettings"));
-    if (settings !== null) {
-      for (var prop in settings) {
-        pirataBot.settings[prop] = settings[prop];
+  retrieveSettings var = function () {
+    configurações var = JSON.parse (localStorage.getItem (basicBotsettings ""));
+    if (configurações! == null) {
+      for (var prop nas configurações) {
+        basicBot.settings [prop] = configurações [prop];
       }
     }
   };
 
   var retrieveFromStorage = function () {
-    var info = localStorage.getItem("pirataBotStorageInfo");
-    if (info === null) API.chatLog(pirataBot.chat.nodatafound);
-    else {
-      var settings = JSON.parse(localStorage.getItem("pirataBotsettings"));
-      var room = JSON.parse(localStorage.getItem("pirataBotRoom"));
-      var elapsed = Date.now() - JSON.parse(info).time;
-      if ((elapsed < 1 * 60 * 60 * 1000)) {
-        API.chatLog(pirataBot.chat.retrievingdata);
-        for (var prop in settings) {
-          pirataBot.settings[prop] = settings[prop];
+    Informação var = localStorage.getItem ("basicBotStorageInfo");
+    if (Informação === null) API.chatLog (basicBot.chat.nodatafound);
+    outro {
+      configurações var = JSON.parse (localStorage.getItem (basicBotsettings ""));
+      sala de var = JSON.parse (localStorage.getItem ("basicBotRoom"));
+      var decorrido = Date.now () - JSON.parse (info) .time;
+      if ((decorrido <1 * 60 * 60 * 1000)) {
+        API.chatLog (basicBot.chat.retrievingdata);
+        for (var prop nas configurações) {
+          basicBot.settings [prop] = configurações [prop];
         }
-        pirataBot.room.users = room.users;
-        pirataBot.room.afkList = room.afkList;
-        pirataBot.room.historyList = room.historyList;
-        pirataBot.room.mutedUsers = room.mutedUsers;
-        //pirataBot.room.autoskip = room.autoskip;
-        pirataBot.room.roomstats = room.roomstats;
-        pirataBot.room.messages = room.messages;
-        pirataBot.room.queue = room.queue;
-        pirataBot.room.newBlacklisted = room.newBlacklisted;
-        API.chatLog(pirataBot.chat.datarestored);
+        basicBot.room.users = room.users;
+        basicBot.room.afkList = room.afkList;
+        basicBot.room.historyList = room.historyList;
+        basicBot.room.mutedUsers = room.mutedUsers;
+        //basicBot.room.autoskip = room.autoskip;
+        basicBot.room.roomstats = room.roomstats;
+        basicBot.room.messages = room.messages;
+        basicBot.room.queue = room.queue;
+        basicBot.room.newBlacklisted = room.newBlacklisted;
+        API.chatLog (basicBot.chat.datarestored);
       }
     }
     var json_sett = null;
-    var roominfo = document.getElementById("room-settings");
+    var roominfo = document.getElementById ("Quarto-settings");
     info = roominfo.textContent;
-    var ref_bot = "@pirataBot=";
-    var ind_ref = info.indexOf(ref_bot);
-    if (ind_ref > 0) {
-      var link = info.substring(ind_ref + ref_bot.length, info.length);
+    var ref_bot = "@ basicBot =";
+    var ind_ref = info.indexOf (ref_bot);
+    if (ind_ref> 0) {
+      ligação var = info.substring (ind_ref + ref_bot.length, info.length);
       var ind_space = null;
-      if (link.indexOf(" ") < link.indexOf("\n")) ind_space = link.indexOf(" ");
-      else ind_space = link.indexOf("\n");
-      link = link.substring(0, ind_space);
-      $.get(link, function (json) {
-        if (json !== null && typeof json !== "undefined") {
-          json_sett = JSON.parse(json);
-          for (var prop in json_sett) {
-            pirataBot.settings[prop] = json_sett[prop];
+      se (link.indexOf ("") <link.indexOf ("\ n")) ind_space link.indexOf = ("");
+      mais ind_space = link.indexOf ("\ n");
+      link = link.substring (0, ind_space);
+      $ .get (Link, função (JSON) {
+        if (json! == null && typeof json! == "undefined") {
+          json_sett = JSON.parse (JSON);
+          for (var prop em json_sett) {
+            basicBot.settings [prop] = json_sett [prop];
           }
         }
       });
@@ -182,74 +182,74 @@
   };
 
   String.prototype.splitBetween = function (a, b) {
-    var self = this;
-    self = this.split(a);
-    for (var i = 0; i < self.length; i++) {
-      self[i] = self[i].split(b);
+    var auto = this;
+    auto = this.split (a);
+    for (var i = 0; i <self.length; i ++) {
+      auto [i] = auto [i] .Split (b);
     }
     var arr = [];
-    for (var i = 0; i < self.length; i++) {
-      if (Array.isArray(self[i])) {
-        for (var j = 0; j < self[i].length; j++) {
-          arr.push(self[i][j]);
+    for (var i = 0; i <self.length; i ++) {
+      if (Array.isArray (self [i])) {
+        for (var j = 0; j auto <[i] .length; j ++) {
+          arr.push (self [i] [j]);
         }
       }
-      else arr.push(self[i]);
+      mais arr.push (self [i]);
     }
-    return arr;
+    retornar arr;
   };
 
-  String.prototype.startsWith = function(str) {
-    return this.substring(0, str.length) === str;
+  String.prototype.startsWith = function (str) {
+    retornar this.substring (0, str.length) === str;
   };
 
   var linkFixer = function (msg) {
-    var parts = msg.splitBetween('<a href="', '<\/a>');
-    for (var i = 1; i < parts.length; i = i + 2) {
-      var link = parts[i].split('"')[0];
-      parts[i] = link;
+    partes var = msg.splitBetween ('<a href="','<\/a>');
+    para (var i = 1; i <parts.length; i = i + 2) {
+      link de var = partes [i] .Split ('"') [0];
+      partes [i] = ligação;
     }
     var m = '';
-    for (var i = 0; i < parts.length; i++) {
-      m += parts[i];
+    for (var i = 0; i <parts.length; i ++) {
+      M + = partes [i];
     }
-    return m;
+    retornar m;
   };
 
   var decodeEntities = function (s) {
-    var str, temp = document.createElement('p');
-    temp.innerHTML = s;
+    var str, temp = document.createElement ('p');
+    temp.innerHTML = S;
     str = temp.textContent || temp.innerText;
     temp = null;
-    return str;
+    retornar str;
   };
 
-  var botCreator = "Matthew (Yemasthui)";
+  var botCreator = "Mateus (Yemasthui)";
   var botMaintainer = "Benzi (Quoona)"
-  var botCreatorIDs = ["3851534", "4105209"];
+  botCreatorIDs var = ["3851534", "4105209"];
 
-  var pirataBot = {
-    version: "2.8.9",
-    status: false,
-    name: "pirataBot",
+  var = {basicBot
+    versão: "2.8.9",
+    Status: false,
+    name: "basicBot",
     loggedInID: null,
-    scriptLink: "https://rawgit.com/Yemasthui/pirataBot/master/pirataBot.js",
+    ScriptLink: "https://rawgit.com/Yemasthui/basicBot/master/basicBot.js",
     cmdLink: "http://git.io/245Ppg",
-    chatLink: "https://rawgit.com/Yemasthui/pirataBot/master/lang/en.json",
-    chat: null,
+    chatLink: "https://rawgit.com/Yemasthui/basicBot/master/lang/en.json",
+    chat: nulo,
     loadChat: loadChat,
     retrieveSettings: retrieveSettings,
     retrieveFromStorage: retrieveFromStorage,
-    settings: {
-      botName: "piratabot",
-      language: "portuguese",
-      chatLink: "https://rawgit.com/Yemasthui/pirataBot/master/lang/en.json",
-      roomLock: false, // Requires an extension to re-load the script
+    configurações: {
+      botname: "piratabot",
+      idioma: "português",
+      chatLink: "https://rawgit.com/Yemasthui/basicBot/master/lang/en.json",
+      roomLock: false, // Requer uma extensão de voltar a carregar o script
       startupCap: 1, // 1-200
       startupVolume: 0, // 0-100
-      startupEmoji: false, // true or false
+      startupEmoji: false, // verdadeiro ou falso
       autowoot: true,
-      autoskip: false,
+      AUTOSKIP: false,
       smartSkip: true,
       cmdDeletion: true,
       maximumAfk: 120,
@@ -258,55 +258,55 @@
       bouncerPlus: true,
       blacklistEnabled: true,
       lockdownEnabled: false,
-      lockGuard: false,
+      LockGuard: false,
       maximumLocktime: 10,
-      cycleGuard: true,
+      CycleGuard: true,
       maximumCycletime: 10,
       voteSkip: false,
       voteSkipLimit: 10,
       historySkip: false,
-      timeGuard: true,
+      TIMEGUARD: true,
       maximumSongLength: 10,
       autodisable: true,
       commandCooldown: 30,
       usercommandsEnabled: true,
       skipPosition: 3,
       skipReasons: [
-        ["theme", "This song does not fit the room theme. "],
-        ["op", "This song is on the OP list. "],
-        ["history", "This song is in the history. "],
-        ["mix", "You played a mix, which is against the rules. "],
-        ["sound", "The song you played had bad sound quality or no sound. "],
-        ["nsfw", "The song you contained was NSFW (image or sound). "],
-        ["unavailable", "The song you played was not available for some users. "]
+        ["Tema", "Essa música não se encaixa no tema do quarto."],
+        ["Op", "Esta canção está na lista de OP."],
+        ["História", "Essa música é na história."],
+        ["Misturar", "Você jogou um mix, que é contra as regras."],
+        ["Som", "A canção que você jogou teve má qualidade do som ou nenhum som."],
+        ["NSFW", "A música que continha era NSFW (imagem ou som)."],
+        ["Indisponível", "A canção que você jogou não estava disponível para alguns usuários."]
       ],
       afkpositionCheck: 15,
-      afkRankCheck: "ambassador",
+      afkRankCheck: "embaixador",
       motdEnabled: false,
       motdInterval: 5,
-      motd: "Temporary Message of the Day",
+      motd: "Mensagem Temporária do Dia",
       filterChat: true,
       etaRestriction: false,
-      welcome: true,
-      opLink: null,
+      boas-vindas: true,
+      Oplink: null,
       rulesLink: null,
       themeLink: null,
       fbLink: null,
       youtubeLink: null,
-      website: null,
+      site: nulo,
       intervalMessages: [],
       messageInterval: 5,
-      songstats: true,
+      songstats: verdadeiro,
       commandLiteral: "!",
       blacklists: {
-        NSFW: "https://rawgit.com/Yemasthui/pirataBot-customization/master/blacklists/NSFWlist.json",
-        OP: "https://rawgit.com/Yemasthui/pirataBot-customization/master/blacklists/OPlist.json",
-        BANNED: "https://rawgit.com/Yemasthui/pirataBot-customization/master/blacklists/BANNEDlist.json"
+        NSFW: "https://rawgit.com/Yemasthui/basicBot-customization/master/blacklists/NSFWlist.json",
+        OP: "https://rawgit.com/Yemasthui/basicBot-customization/master/blacklists/OPlist.json",
+        PROIBIDO: "https://rawgit.com/Yemasthui/basicBot-customization/master/blacklists/BANNEDlist.json"
       }
     },
-    room: {
-      name: null,
-      users: [],
+    quarto: {
+      Nome: nulo,
+      usuários: [],
       afkList: [],
       mutedUsers: [],
       bannedUsers: [],
@@ -314,23 +314,23 @@
       usercommand: true,
       allcommand: true,
       afkInterval: null,
-      //autoskip: false,
+      // AUTOSKIP: false,
       autoskipTimer: null,
       autodisableInterval: null,
       autodisableFunc: function () {
-        if (pirataBot.status && pirataBot.settings.autodisable) {
-          API.sendChat('!afkdisable');
-          API.sendChat('!joindisable');
+        if (basicBot.status && basicBot.settings.autodisable) {
+          API.sendChat ('! Afkdisable');
+          API.sendChat ('! Joindisable');
         }
       },
-      queueing: 0,
+      filas: 0,
       queueable: true,
       currentDJID: null,
       historyList: [],
-      cycleTimer: setTimeout(function () {
+      cycleTimer: setTimeout (function () {
       }, 1),
       roomstats: {
-        accountName: null,
+        accountname: null,
         totalWoots: 0,
         totalCurates: 0,
         totalMehs: 0,
@@ -338,55 +338,55 @@
         songCount: 0,
         chatmessages: 0
       },
-      messages: {
-        from: [],
-        to: [],
+      mensagens: {
+        de: [],
+        para: [],
         message: []
       },
-      queue: {
+      fila: {
         id: [],
-        position: []
+        posição: []
       },
       blacklists: {
 
       },
       newBlacklisted: [],
       newBlacklistedSongFunction: null,
-      roulette: {
+      roleta: {
         rouletteStatus: false,
-        participants: [],
-        countdown: null,
+        participantes: [],
+        Contagem regressiva: null,
         startRoulette: function () {
-          pirataBot.room.roulette.rouletteStatus = true;
-          pirataBot.room.roulette.countdown = setTimeout(function () {
-            pirataBot.room.roulette.endRoulette();
+          basicBot.room.roulette.rouletteStatus = true;
+          basicBot.room.roulette.countdown = setTimeout (function () {
+            basicBot.room.roulette.endRoulette ();
           }, 60 * 1000);
-          API.sendChat(pirataBot.chat.isopen);
+          API.sendChat (basicBot.chat.isopen);
         },
         endRoulette: function () {
-          pirataBot.room.roulette.rouletteStatus = false;
-          var ind = Math.floor(Math.random() * pirataBot.room.roulette.participants.length);
-          var winner = pirataBot.room.roulette.participants[ind];
-          pirataBot.room.roulette.participants = [];
-          var pos = Math.floor((Math.random() * API.getWaitList().length) + 1);
-          var user = pirataBot.userUtilities.lookupUser(winner);
+          basicBot.room.roulette.rouletteStatus = false;
+          var ind = Math.floor (Math.random () * basicBot.room.roulette.participants.length);
+          Vencedor do var = basicBot.room.roulette.participants [ind];
+          basicBot.room.roulette.participants = [];
+          var pos = Math.floor (. (Math.random () * API.getWaitList () comprimento) + 1);
+          usuário var = basicBot.userUtilities.lookupUser (vencedor);
           var name = user.username;
-          API.sendChat(subChat(pirataBot.chat.winnerpicked, {name: name, position: pos}));
-          setTimeout(function (winner, pos) {
-            pirataBot.userUtilities.moveUser(winner, pos, false);
-          }, 1 * 1000, winner, pos);
+          API.sendChat (subChat (basicBot.chat.winnerpicked, {name: nome, cargo: pos}));
+          setTimeout (function (vencedor, pos) {
+            basicBot.userUtilities.moveUser (vencedor, pos, false);
+          }, 1 * 1000, vencedor, pos);
         }
       }
     },
-    User: function (id, name) {
+    Usuário: function (id, nome) {
       this.id = id;
-      this.username = name;
-      this.jointime = Date.now();
-      this.lastActivity = Date.now();
+      this.username = nome;
+      this.jointime Date.now = ();
+      this.lastActivity Date.now = ();
       this.votes = {
         woot: 0,
         meh: 0,
-        curate: 0
+        curador: 0
       };
       this.lastEta = null;
       this.afkWarningCount = 0;
@@ -394,152 +394,152 @@
       this.inRoom = true;
       this.isMuted = false;
       this.lastDC = {
-        time: null,
-        position: null,
+        tempo: nulo,
+        posição: null,
         songCount: 0
       };
       this.lastKnownPosition = null;
     },
     userUtilities: {
-      getJointime: function (user) {
-        return user.jointime;
+      getJointime: function (usuário) {
+        retornar user.jointime;
       },
-      getUser: function (user) {
-        return API.getUser(user.id);
+      getUser: function (usuário) {
+        retornar API.getUser (user.id);
       },
-      updatePosition: function (user, newPos) {
-        user.lastKnownPosition = newPos;
+      updatePosition: function (usuário, NewPOS) {
+        user.lastKnownPosition = NewPOS;
       },
-      updateDC: function (user) {
-        user.lastDC.time = Date.now();
+      updateDC: function (usuário) {
+        user.lastDC.time Date.now = ();
         user.lastDC.position = user.lastKnownPosition;
-        user.lastDC.songCount = pirataBot.room.roomstats.songCount;
+        user.lastDC.songCount = basicBot.room.roomstats.songCount;
       },
-      setLastActivity: function (user) {
-        user.lastActivity = Date.now();
+      setLastActivity: function (usuário) {
+        user.lastActivity Date.now = ();
         user.afkWarningCount = 0;
-        clearTimeout(user.afkCountdown);
+        clearTimeout (user.afkCountdown);
       },
-      getLastActivity: function (user) {
-        return user.lastActivity;
+      getLastActivity: function (usuário) {
+        retornar user.lastActivity;
       },
-      getWarningCount: function (user) {
-        return user.afkWarningCount;
+      getWarningCount: function (usuário) {
+        retornar user.afkWarningCount;
       },
-      setWarningCount: function (user, value) {
+      setWarningCount: function (usuário, value) {
         user.afkWarningCount = value;
       },
       lookupUser: function (id) {
-        for (var i = 0; i < pirataBot.room.users.length; i++) {
-          if (pirataBot.room.users[i].id === id) {
-            return pirataBot.room.users[i];
+        for (var i = 0; i <basicBot.room.users.length; i ++) {
+          if (basicBot.room.users [i] .id === id) {
+            retornar basicBot.room.users [i];
           }
         }
         return false;
       },
-      lookupUserName: function (name) {
-        for (var i = 0; i < pirataBot.room.users.length; i++) {
-          var match = pirataBot.room.users[i].username.trim() == name.trim();
-          if (match) {
-            return pirataBot.room.users[i];
+      lookupUserName: function (nome) {
+        for (var i = 0; i <basicBot.room.users.length; i ++) {
+          var match = basicBot.room.users [i] .username.trim () == name.trim ();
+          if (jogo) {
+            retornar basicBot.room.users [i];
           }
         }
         return false;
       },
       voteRatio: function (id) {
-        var user = pirataBot.userUtilities.lookupUser(id);
-        var votes = user.votes;
-        if (votes.meh === 0) votes.ratio = 1;
-        else votes.ratio = (votes.woot / votes.meh).toFixed(2);
-        return votes;
+        usuário var = basicBot.userUtilities.lookupUser (id);
+        var = user.votes votos;
+        se (votes.meh === 0) votes.ratio = 1;
+        mais votes.ratio = (votes.woot / votes.meh) .toFixed (2);
+        retornar votos;
 
       },
-      getPermission: function (obj) { //1 requests
+      GetPermission: function (obj) {// 1 Pedidos
         var u;
-        if (typeof obj === "object") u = obj;
-        else u = API.getUser(obj);
-        for (var i = 0; i < botCreatorIDs.length; i++) {
-          if (botCreatorIDs[i].indexOf(u.id) > -1) return 10;
+        if (obj typeof === "objeto") u = obj;
+        mais u = API.getUser (obj);
+        for (var i = 0; i <botCreatorIDs.length; i ++) {
+          if (botCreatorIDs [i] .indexOf (u.id)> -1) return 10;
         }
-        if (u.gRole < 2) return u.role;
-        else {
+        if (u.gRole <2) retornar u.role;
+        outro {
           switch (u.gRole) {
             case 2:
-            return 7;
+            retornar 7;
             case 3:
-            return 8;
+            retornar 8;
             case 4:
-            return 9;
-            case 5:
-            return 10;
+            retornar 9;
+            Caso 5:
+            retornar 10;
           }
         }
-        return 0;
+        retornar 0;
       },
-      moveUser: function (id, pos, priority) {
-        var user = pirataBot.userUtilities.lookupUser(id);
-        var wlist = API.getWaitList();
-        if (API.getWaitListPosition(id) === -1) {
-          if (wlist.length < 50) {
-            API.moderateAddDJ(id);
-            if (pos !== 0) setTimeout(function (id, pos) {
-              API.moderateMoveDJ(id, pos);
+      MOVEUSER: function (id, pos, prioridade) {
+        usuário var = basicBot.userUtilities.lookupUser (id);
+        var wlist API.getWaitList = ();
+        if (API.getWaitListPosition (id) === -1) {
+          se (wlist.length <50) {
+            API.moderateAddDJ (id);
+            if (pos! == 0) setTimeout (function (id, pos) {
+              API.moderateMoveDJ (id, pos);
             }, 1250, id, pos);
           }
-          else {
+          outro {
             var alreadyQueued = -1;
-            for (var i = 0; i < pirataBot.room.queue.id.length; i++) {
-              if (pirataBot.room.queue.id[i] === id) alreadyQueued = i;
+            for (var i = 0; i <basicBot.room.queue.id.length; i ++) {
+              if (basicBot.room.queue.id id [i] ===) alreadyQueued = i;
             }
-            if (alreadyQueued !== -1) {
-              pirataBot.room.queue.position[alreadyQueued] = pos;
-              return API.sendChat(subChat(pirataBot.chat.alreadyadding, {position: pirataBot.room.queue.position[alreadyQueued]}));
+            se (alreadyQueued! == -1) {
+              basicBot.room.queue.position [alreadyQueued] = pos;
+              retorno API.sendChat (subChat (basicBot.chat.alreadyadding, {position: basicBot.room.queue.position [alreadyQueued]}));
             }
-            pirataBot.roomUtilities.booth.lockBooth();
-            if (priority) {
-              pirataBot.room.queue.id.unshift(id);
-              pirataBot.room.queue.position.unshift(pos);
+            basicBot.roomUtilities.booth.lockBooth ();
+            if (prioridade) {
+              basicBot.room.queue.id.unshift (id);
+              basicBot.room.queue.position.unshift (pos);
             }
-            else {
-              pirataBot.room.queue.id.push(id);
-              pirataBot.room.queue.position.push(pos);
+            outro {
+              basicBot.room.queue.id.push (id);
+              basicBot.room.queue.position.push (pos);
             }
             var name = user.username;
-            return API.sendChat(subChat(pirataBot.chat.adding, {name: name, position: pirataBot.room.queue.position.length}));
+            retornar API.sendChat (subChat (basicBot.chat.adding, {name: nome, cargo: basicBot.room.queue.position.length}));
           }
         }
-        else API.moderateMoveDJ(id, pos);
+        mais API.moderateMoveDJ (id, pos);
       },
       dclookup: function (id) {
-        var user = pirataBot.userUtilities.lookupUser(id);
-        if (typeof user === 'boolean') return pirataBot.chat.usernotfound;
+        usuário var = basicBot.userUtilities.lookupUser (id);
+        if (typeof usuário === 'booleano') retornar basicBot.chat.usernotfound;
         var name = user.username;
-        if (user.lastDC.time === null) return subChat(pirataBot.chat.notdisconnected, {name: name});
+        if (user.lastDC.time === null) return subChat (basicBot.chat.notdisconnected, {name: name});
         var dc = user.lastDC.time;
         var pos = user.lastDC.position;
-        if (pos === null) return pirataBot.chat.noposition;
-        var timeDc = Date.now() - dc;
+        if (pos === null) basicBot.chat.noposition retorno;
+        var timeDc = Date.now () - dc;
         var validDC = false;
-        if (pirataBot.settings.maximumDc * 60 * 1000 > timeDc) {
+        if (basicBot.settings.maximumDc * 60 * 1000> timeDc) {
           validDC = true;
         }
-        var time = pirataBot.roomUtilities.msToStr(timeDc);
-        if (!validDC) return (subChat(pirataBot.chat.toolongago, {name: pirataBot.userUtilities.getUser(user).username, time: time}));
-        var songsPassed = pirataBot.room.roomstats.songCount - user.lastDC.songCount;
+        tempo = var basicBot.roomUtilities.msToStr (timeDc);
+        if (! validDC) retorno (subChat (basicBot.chat.toolongago, {name: basicBot.userUtilities.getUser (usuário) .username, tempo: time}));
+        var songsPassed = basicBot.room.roomstats.songCount - user.lastDC.songCount;
         var afksRemoved = 0;
-        var afkList = pirataBot.room.afkList;
-        for (var i = 0; i < afkList.length; i++) {
-          var timeAfk = afkList[i][1];
-          var posAfk = afkList[i][2];
-          if (dc < timeAfk && posAfk < pos) {
-            afksRemoved++;
+        var afkList = basicBot.room.afkList;
+        for (var i = 0; i <afkList.length; i ++) {
+          var timeAfk = afkList [i] [1];
+          var posAfk = afkList [i] [2];
+          if (dc <timeAfk && posAfk <pos) {
+            afksRemoved ++;
           }
         }
         var newPosition = user.lastDC.position - songsPassed - afksRemoved;
-        if (newPosition <= 0) return subChat(pirataBot.chat.notdisconnected, {name: name});
-        var msg = subChat(pirataBot.chat.valid, {name: pirataBot.userUtilities.getUser(user).username, time: time, position: newPosition});
-        pirataBot.userUtilities.moveUser(user.id, newPosition, true);
-        return msg;
+        if (newPosition <= 0) return subChat (basicBot.chat.notdisconnected, {name: name});
+        var msg = subChat (basicBot.chat.valid, {name: basicBot.userUtilities.getUser (usuário) .username, tempo: tempo, posição: newPosition});
+        basicBot.userUtilities.moveUser (user.id, newPosition, true);
+        retornar msg;
       }
     },
 
@@ -547,145 +547,145 @@
       rankToNumber: function (rankString) {
         var rankInt = null;
         switch (rankString) {
-          case "admin":
+          caso "admin":
           rankInt = 10;
-          break;
-          case "ambassador":
+          parar;
+          caso "embaixador":
           rankInt = 7;
-          break;
-          case "host":
+          parar;
+          caso "host":
           rankInt = 5;
-          break;
-          case "cohost":
+          parar;
+          caso "CoHost":
           rankInt = 4;
-          break;
-          case "manager":
+          parar;
+          gerente de caso ":
           rankInt = 3;
-          break;
-          case "bouncer":
+          parar;
+          caso "leão de chácara":
           rankInt = 2;
-          break;
-          case "residentdj":
+          parar;
+          caso "residentdj":
           rankInt = 1;
-          break;
-          case "user":
+          parar;
+          caso "user":
           rankInt = 0;
-          break;
+          parar;
         }
-        return rankInt;
+        retornar rankInt;
       },
       msToStr: function (msTime) {
-        var ms, msg, timeAway;
+        ms var, msg, timeAway;
         msg = '';
         timeAway = {
-          'days': 0,
-          'hours': 0,
-          'minutes': 0,
-          'seconds': 0
+          "Dias": 0,
+          'Horas': 0,
+          'Minutos': 0,
+          'segundos': 0
         };
         ms = {
-          'day': 24 * 60 * 60 * 1000,
-          'hour': 60 * 60 * 1000,
-          'minute': 60 * 1000,
-          'second': 1000
+          'Dia': 24 * 60 * 60 * 1000,
+          'Hora': 60 * 60 * 1000,
+          'Minutos': 60 * 1000,
+          'Segunda': 1000
         };
-        if (msTime > ms.day) {
-          timeAway.days = Math.floor(msTime / ms.day);
-          msTime = msTime % ms.day;
+        se (msTime> ms.day) {
+          timeAway.days = Math.floor (msTime / ms.day);
+          msTime = msTime% ms.day;
         }
-        if (msTime > ms.hour) {
-          timeAway.hours = Math.floor(msTime / ms.hour);
-          msTime = msTime % ms.hour;
+        se (msTime> ms.hour) {
+          timeAway.hours = Math.floor (msTime / ms.hour);
+          msTime = msTime% ms.hour;
         }
-        if (msTime > ms.minute) {
-          timeAway.minutes = Math.floor(msTime / ms.minute);
-          msTime = msTime % ms.minute;
+        se (msTime> ms.minute) {
+          timeAway.minutes = Math.floor (msTime / ms.minute);
+          msTime = msTime% ms.minute;
         }
-        if (msTime > ms.second) {
-          timeAway.seconds = Math.floor(msTime / ms.second);
+        se (msTime> ms.second) {
+          timeAway.seconds = Math.floor (msTime / ms.second);
         }
-        if (timeAway.days !== 0) {
-          msg += timeAway.days.toString() + 'd';
+        if (timeAway.days! == 0) {
+          msg + = timeAway.days.toString () + 'd';
         }
-        if (timeAway.hours !== 0) {
-          msg += timeAway.hours.toString() + 'h';
+        if (timeAway.hours! == 0) {
+          msg + = timeAway.hours.toString () + 'h';
         }
-        if (timeAway.minutes !== 0) {
-          msg += timeAway.minutes.toString() + 'm';
+        if (timeAway.minutes! == 0) {
+          msg + = timeAway.minutes.toString () + 'm';
         }
-        if (timeAway.minutes < 1 && timeAway.hours < 1 && timeAway.days < 1) {
-          msg += timeAway.seconds.toString() + 's';
+        if (timeAway.minutes <1 && timeAway.hours <1 && timeAway.days <1) {
+          msg + = timeAway.seconds.toString () + 's';
         }
-        if (msg !== '') {
-          return msg;
-        } else {
+        if (msg! == '') {
+          retornar msg;
+        } Outro {
           return false;
         }
       },
-      booth: {
-        lockTimer: setTimeout(function () {
+      estande: {
+        lockTimer: setTimeout (function () {
         }, 1000),
-        locked: false,
+        bloqueado: false,
         lockBooth: function () {
-          API.moderateLockWaitList(!pirataBot.roomUtilities.booth.locked);
-          pirataBot.roomUtilities.booth.locked = false;
-          if (pirataBot.settings.lockGuard) {
-            pirataBot.roomUtilities.booth.lockTimer = setTimeout(function () {
-              API.moderateLockWaitList(pirataBot.roomUtilities.booth.locked);
-            }, pirataBot.settings.maximumLocktime * 60 * 1000);
+          API.moderateLockWaitList (basicBot.roomUtilities.booth.locked!);
+          basicBot.roomUtilities.booth.locked = false;
+          se (basicBot.settings.lockGuard) {
+            basicBot.roomUtilities.booth.lockTimer = setTimeout (function () {
+              API.moderateLockWaitList (basicBot.roomUtilities.booth.locked);
+            }, BasicBot.settings.maximumLocktime * 60 * 1000);
           }
         },
         unlockBooth: function () {
-          API.moderateLockWaitList(pirataBot.roomUtilities.booth.locked);
-          clearTimeout(pirataBot.roomUtilities.booth.lockTimer);
+          API.moderateLockWaitList (basicBot.roomUtilities.booth.locked);
+          clearTimeout (basicBot.roomUtilities.booth.lockTimer);
         }
       },
       afkCheck: function () {
-        if (!pirataBot.status || !pirataBot.settings.afkRemoval) return void (0);
-        var rank = pirataBot.roomUtilities.rankToNumber(pirataBot.settings.afkRankCheck);
-        var djlist = API.getWaitList();
-        var lastPos = Math.min(djlist.length, pirataBot.settings.afkpositionCheck);
-        if (lastPos - 1 > djlist.length) return void (0);
-        for (var i = 0; i < lastPos; i++) {
-          if (typeof djlist[i] !== 'undefined') {
-            var id = djlist[i].id;
-            var user = pirataBot.userUtilities.lookupUser(id);
-            if (typeof user !== 'boolean') {
-              var plugUser = pirataBot.userUtilities.getUser(user);
-              if (rank !== null && pirataBot.userUtilities.getPermission(plugUser) <= rank) {
+        if (! basicBot.status || basicBot.settings.afkRemoval) vazio retorno (0);
+        Rank var = basicBot.roomUtilities.rankToNumber (basicBot.settings.afkRankCheck);
+        var djlist API.getWaitList = ();
+        var lastPos = Math.min (djlist.length, basicBot.settings.afkpositionCheck);
+        if (lastPos - 1> djlist.length) vazio retorno (0);
+        for (var i = 0; i <lastPos; i ++) {
+          if (typeof djlist [i]! == 'indefinido') {
+            var id = djlist [i] .id;
+            usuário var = basicBot.userUtilities.lookupUser (id);
+            if (typeof usuário! == 'booleano') {
+              var plugUser = basicBot.userUtilities.getUser (usuário);
+              if (grau! == null && basicBot.userUtilities.getPermission (plugUser) <= rank) {
                 var name = plugUser.username;
-                var lastActive = pirataBot.userUtilities.getLastActivity(user);
-                var inactivity = Date.now() - lastActive;
-                var time = pirataBot.roomUtilities.msToStr(inactivity);
+                var lastActive = basicBot.userUtilities.getLastActivity (usuário);
+                var inatividade = Date.now () - lastActive;
+                var tempo = basicBot.roomUtilities.msToStr (inatividade);
                 var warncount = user.afkWarningCount;
-                if (inactivity > pirataBot.settings.maximumAfk * 60 * 1000) {
-                  if (warncount === 0) {
-                    API.sendChat(subChat(pirataBot.chat.warning1, {name: name, time: time}));
+                if (inatividade> basicBot.settings.maximumAfk * 60 * 1000) {
+                  se (warncount === 0) {
+                    API.sendChat (subChat (basicBot.chat.warning1, {name: nome, tempo: time}));
                     user.afkWarningCount = 3;
-                    user.afkCountdown = setTimeout(function (userToChange) {
+                    user.afkCountdown = setTimeout (function (userToChange) {
                       userToChange.afkWarningCount = 1;
-                    }, 90 * 1000, user);
+                    }, 90 * 1000, do usuário);
                   }
                   else if (warncount === 1) {
-                    API.sendChat(subChat(pirataBot.chat.warning2, {name: name}));
+                    API.sendChat (subChat (basicBot.chat.warning2, {name: name}));
                     user.afkWarningCount = 3;
-                    user.afkCountdown = setTimeout(function (userToChange) {
+                    user.afkCountdown = setTimeout (function (userToChange) {
                       userToChange.afkWarningCount = 2;
-                    }, 30 * 1000, user);
+                    }, 30 * 1000, do usuário);
                   }
                   else if (warncount === 2) {
-                    var pos = API.getWaitListPosition(id);
-                    if (pos !== -1) {
-                      pos++;
-                      pirataBot.room.afkList.push([id, Date.now(), pos]);
+                    var pos = API.getWaitListPosition (id);
+                    if (pos! == -1) {
+                      pos ++;
+                      basicBot.room.afkList.push ([id, Date.now (), pos]);
                       user.lastDC = {
 
-                        time: null,
-                        position: null,
+                        tempo: nulo,
+                        posição: null,
                         songCount: 0
                       };
-                      API.moderateRemoveDJ(id);
-                      API.sendChat(subChat(pirataBot.chat.afkremove, {name: name, time: time, position: pos, maximumafk: pirataBot.settings.maximumAfk}));
+                      API.moderateRemoveDJ (id);
+                      API.sendChat (subChat (basicBot.chat.afkremove, {name: nome, o tempo: hora, a posição: pos, maximumafk: basicBot.settings.maximumAfk}));
                     }
                     user.afkWarningCount = 0;
                   }
@@ -695,195 +695,195 @@
           }
         }
       },
-      smartSkip: function (reason) {
-        var dj = API.getDJ();
-        var id = dj.id;
-        var waitlistlength = API.getWaitList().length;
-        var locked = false;
-        pirataBot.room.queueable = false;
+      smartSkip: function (razão) {
+        var dj = API.getDJ ();
+        id = var dj.id;
+        . var waitlistlength = API.getWaitList () Comprimento;
+        var bloqueado = false;
+        basicBot.room.queueable = false;
 
-        if (waitlistlength == 50) {
-          pirataBot.roomUtilities.booth.lockBooth();
-          locked = true;
+        se (waitlistlength == 50) {
+          basicBot.roomUtilities.booth.lockBooth ();
+          trancada = true;
         }
-        setTimeout(function (id) {
-          API.moderateForceSkip();
-          setTimeout(function () {
-            if (typeof reason !== 'undefined') {
-              API.sendChat(reason);
+        setTimeout (function (id) {
+          API.moderateForceSkip ();
+          setTimeout (function () {
+            if (typeof razão! == 'indefinido') {
+              API.sendChat (razão);
             }
           }, 500);
-          pirataBot.room.skippable = false;
-          setTimeout(function () {
-            pirataBot.room.skippable = true
+          basicBot.room.skippable = false;
+          setTimeout (function () {
+            basicBot.room.skippable = true
           }, 5 * 1000);
-          setTimeout(function (id) {
-            pirataBot.userUtilities.moveUser(id, pirataBot.settings.skipPosition, false);
-            pirataBot.room.queueable = true;
-            if (locked) {
-              setTimeout(function () {
-                pirataBot.roomUtilities.booth.unlockBooth();
+          setTimeout (function (id) {
+            basicBot.userUtilities.moveUser (id, basicBot.settings.skipPosition, false);
+            basicBot.room.queueable = true;
+            if (bloqueado) {
+              setTimeout (function () {
+                basicBot.roomUtilities.booth.unlockBooth ();
               }, 1000);
             }
           }, 1500, id);
         }, 1000, id);
       },
       changeDJCycle: function () {
-        var toggle = $(".cycle-toggle");
-        if (toggle.hasClass("disabled")) {
-          toggle.click();
-          if (pirataBot.settings.cycleGuard) {
-            pirataBot.room.cycleTimer = setTimeout(function () {
-              if (toggle.hasClass("enabled")) toggle.click();
-            }, pirataBot.settings.cycleMaxTime * 60 * 1000);
+        var alternância = $ ("ciclo de alternância.");
+        if (toggle.hasClass ("disabled")) {
+          toggle.click ();
+          se (basicBot.settings.cycleGuard) {
+            basicBot.room.cycleTimer = setTimeout (function () {
+              if (toggle.hasClass ("habilitado")) toggle.click ();
+            }, BasicBot.settings.cycleMaxTime * 60 * 1000);
           }
         }
-        else {
-          toggle.click();
-          clearTimeout(pirataBot.room.cycleTimer);
+        outro {
+          toggle.click ();
+          clearTimeout (basicBot.room.cycleTimer);
         }
 
-        // TODO: Use API.moderateDJCycle(true/false)
+        // TODO: Use API.moderateDJCycle (true / false)
       },
       intervalMessage: function () {
-        var interval;
-        if (pirataBot.settings.motdEnabled) interval = pirataBot.settings.motdInterval;
-        else interval = pirataBot.settings.messageInterval;
-        if ((pirataBot.room.roomstats.songCount % interval) === 0 && pirataBot.status) {
+        intervalo var;
+        if (basicBot.settings.motdEnabled) interval = basicBot.settings.motdInterval;
+        outro intervalo = basicBot.settings.messageInterval;
+        if ((basicBot.room.roomstats.songCount% intervalo) === 0 && basicBot.status) {
           var msg;
-          if (pirataBot.settings.motdEnabled) {
-            msg = pirataBot.settings.motd;
+          se (basicBot.settings.motdEnabled) {
+            msg = basicBot.settings.motd;
           }
-          else {
-            if (pirataBot.settings.intervalMessages.length === 0) return void (0);
-            var messageNumber = pirataBot.room.roomstats.songCount % pirataBot.settings.intervalMessages.length;
-            msg = pirataBot.settings.intervalMessages[messageNumber];
+          outro {
+            if (basicBot.settings.intervalMessages.length === 0) retorno void (0);
+            var MessageNumber = basicBot.room.roomstats.songCount% basicBot.settings.intervalMessages.length;
+            msg = basicBot.settings.intervalMessages [MessageNumber];
           }
-          API.sendChat('/me ' + msg);
+          API.sendChat ('/ me' + msg);
         }
       },
       updateBlacklists: function () {
-        for (var bl in pirataBot.settings.blacklists) {
-          pirataBot.room.blacklists[bl] = [];
-          if (typeof pirataBot.settings.blacklists[bl] === 'function') {
-            pirataBot.room.blacklists[bl] = pirataBot.settings.blacklists();
+        for (var bl em basicBot.settings.blacklists) {
+          basicBot.room.blacklists [bl] = [];
+          if (typeof basicBot.settings.blacklists [bl] === 'função') {
+            basicBot.room.blacklists [bl] basicBot.settings.blacklists = ();
           }
-          else if (typeof pirataBot.settings.blacklists[bl] === 'string') {
-            if (pirataBot.settings.blacklists[bl] === '') {
-              continue;
+          else if (typeof basicBot.settings.blacklists [bl] === 'string') {
+            if (basicBot.settings.blacklists [bl] === '') {
+              continuar;
             }
-            try {
-              (function (l) {
-                $.get(pirataBot.settings.blacklists[l], function (data) {
-                  if (typeof data === 'string') {
-                    data = JSON.parse(data);
+            tentar {
+              (Function (l) {
+                $ .get (basicBot.settings.blacklists [L], função (dados) {
+                  if (typeof dados === 'string') {
+                    data = JSON.parse (de dados);
                   }
-                  var list = [];
-                  for (var prop in data) {
-                    if (typeof data[prop].mid !== 'undefined') {
-                      list.push(data[prop].mid);
+                  lista var = [];
+                  for (var prop em dados) {
+                    if (typeof dados [prop] .mid! == 'indefinido') {
+                      list.push (dados [prop] .mid);
                     }
                   }
-                  pirataBot.room.blacklists[l] = list;
+                  basicBot.room.blacklists [L] = lista;
                 })
-              })(bl);
+              }) (Bl);
             }
             catch (e) {
-              API.chatLog('Error setting' + bl + 'blacklist.');
-              console.log('Error setting' + bl + 'blacklist.');
-              console.log(e);
+              API.chatLog ('configuração de erro' + bl + 'lista negra.');
+              console.log ('configuração de erro' + bl + 'lista negra.');
+              console.log (e);
             }
           }
         }
       },
       logNewBlacklistedSongs: function () {
-        if (typeof console.table !== 'undefined') {
-          console.table(pirataBot.room.newBlacklisted);
+        if (typeof console.table! == 'indefinido') {
+          console.table (basicBot.room.newBlacklisted);
         }
-        else {
-          console.log(pirataBot.room.newBlacklisted);
+        outro {
+          console.log (basicBot.room.newBlacklisted);
         }
       },
       exportNewBlacklistedSongs: function () {
-        var list = {};
-        for (var i = 0; i < pirataBot.room.newBlacklisted.length; i++) {
-          var track = pirataBot.room.newBlacklisted[i];
-          list[track.list] = [];
-          list[track.list].push({
-            title: track.title,
-            author: track.author,
+        lista var = {};
+        for (var i = 0; i <basicBot.room.newBlacklisted.length; i ++) {
+          var pista = basicBot.room.newBlacklisted [i];
+          lista [track.list] = [];
+          lista [track.list] .faça pressão sobre ({
+            Título: track.title,
+            autor: track.author,
             mid: track.mid
           });
         }
-        return list;
+        lista de retornar;
       }
     },
     eventChat: function (chat) {
-      chat.message = linkFixer(chat.message);
-      chat.message = decodeEntities(chat.message);
-      chat.message = chat.message.trim();
-      for (var i = 0; i < pirataBot.room.users.length; i++) {
-        if (pirataBot.room.users[i].id === chat.uid) {
-          pirataBot.userUtilities.setLastActivity(pirataBot.room.users[i]);
-          if (pirataBot.room.users[i].username !== chat.un) {
-            pirataBot.room.users[i].username = chat.un;
+      chat.message = linkFixer (chat.message);
+      chat.message = decodeEntities (chat.message);
+      chat.message chat.message.trim = ();
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === chat.uid) {
+          basicBot.userUtilities.setLastActivity (basicBot.room.users [i]);
+          if (basicBot.room.users [i] .username! == chat.un) {
+            basicBot.room.users [i] = .username chat.un;
           }
         }
       }
-      if (pirataBot.chatUtilities.chatFilter(chat)) return void (0);
-      if (!pirataBot.chatUtilities.commandCheck(chat))
-      pirataBot.chatUtilities.action(chat);
+      if (basicBot.chatUtilities.chatFilter (chat)) vazio retorno (0);
+      if (! basicBot.chatUtilities.commandCheck (chat))
+      basicBot.chatUtilities.action (chat);
     },
-    eventUserjoin: function (user) {
-      var known = false;
+    eventUserjoin: function (usuário) {
+      var conhecido = false;
       var index = null;
-      for (var i = 0; i < pirataBot.room.users.length; i++) {
-        if (pirataBot.room.users[i].id === user.id) {
-          known = true;
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === user.id) {
+          conhecido = true;
           index = i;
         }
       }
       var greet = true;
       var welcomeback = null;
-      if (known) {
-        pirataBot.room.users[index].inRoom = true;
-        var u = pirataBot.userUtilities.lookupUser(user.id);
+      se (conhecido) {
+        basicBot.room.users [índice] .inRoom = true;
+        var u = basicBot.userUtilities.lookupUser (user.id);
         var jt = u.jointime;
-        var t = Date.now() - jt;
-        if (t < 10 * 1000) greet = false;
-        else welcomeback = true;
+        var t = Date.now () - jt;
+        if (t <10 * 1000) cumprimentar = false;
+        mais welcomeback = true;
       }
-      else {
-        pirataBot.room.users.push(new pirataBot.User(user.id, user.username));
+      outro {
+        basicBot.room.users.push (novo basicBot.User (user.id, user.username));
         welcomeback = false;
       }
-      for (var j = 0; j < pirataBot.room.users.length; j++) {
-        if (pirataBot.userUtilities.getUser(pirataBot.room.users[j]).id === user.id) {
-          pirataBot.userUtilities.setLastActivity(pirataBot.room.users[j]);
-          pirataBot.room.users[j].jointime = Date.now();
+      para (var j = 0; j <basicBot.room.users.length; j ++) {
+        if (basicBot.userUtilities.getUser (basicBot.room.users [j]). id === user.id) {
+          basicBot.userUtilities.setLastActivity (basicBot.room.users [j]);
+          basicBot.room.users [j] = .jointime Date.now ();
         }
 
       }
-      if (pirataBot.settings.welcome && greet) {
-        welcomeback ?
-        setTimeout(function (user) {
-          API.sendChat(subChat(pirataBot.chat.welcomeback, {name: user.username}));
-        }, 1 * 1000, user)
+      if (basicBot.settings.welcome && cumprimentar) {
+        bem vindo de volta?
+        setTimeout (function (usuário) {
+          API.sendChat (subChat (basicBot.chat.welcomeback, {name: user.username}));
+        }, 1 * 1000, usuário)
         :
-        setTimeout(function (user) {
-          API.sendChat(subChat(pirataBot.chat.welcome, {name: user.username}));
-        }, 1 * 1000, user);
+        setTimeout (function (usuário) {
+          API.sendChat (subChat (basicBot.chat.welcome, {name: user.username}));
+        }, 1 * 1000, do usuário);
       }
     },
-    eventUserleave: function (user) {
-      var lastDJ = API.getHistory()[0].user.id;
-      for (var i = 0; i < pirataBot.room.users.length; i++) {
-        if (pirataBot.room.users[i].id === user.id) {
-          pirataBot.userUtilities.updateDC(pirataBot.room.users[i]);
-          pirataBot.room.users[i].inRoom = false;
-          if (lastDJ == user.id){
-            var user = pirataBot.userUtilities.lookupUser(pirataBot.room.users[i].id);
-            pirataBot.userUtilities.updatePosition(user, 0);
+    eventUserleave: function (usuário) {
+      var lastDJ = API.getHistory () [0] .user.id;
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === user.id) {
+          basicBot.userUtilities.updateDC (basicBot.room.users [i]);
+          basicBot.room.users [i] .inRoom = false;
+          if (lastDJ == user.id) {
+            usuário var = basicBot.userUtilities.lookupUser (basicBot.room.users [i] .id);
+            basicBot.userUtilities.updatePosition (usuário, 0);
             user.lastDC.time = null;
             user.lastDC.position = user.lastKnownPosition;
           }
@@ -891,242 +891,242 @@
       }
     },
     eventVoteupdate: function (obj) {
-      for (var i = 0; i < pirataBot.room.users.length; i++) {
-        if (pirataBot.room.users[i].id === obj.user.id) {
-          if (obj.vote === 1) {
-            pirataBot.room.users[i].votes.woot++;
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === obj.user.id) {
+          se (=== obj.vote 1) {
+            basicBot.room.users [i] .votes.woot ++;
           }
-          else {
-            pirataBot.room.users[i].votes.meh++;
+          outro {
+            basicBot.room.users [i] .votes.meh ++;
           }
         }
       }
 
-      var mehs = API.getScore().negative;
-      var woots = API.getScore().positive;
-      var dj = API.getDJ();
-      var timeLeft = API.getTimeRemaining();
-      var timeElapsed = API.getTimeElapsed();
+      var mehs = API.getScore () negativo.;
+      var woots = API.getScore () positivo.;
+      var dj = API.getDJ ();
+      var timeleft = API.getTimeRemaining ();
+      var timeElapsed API.getTimeElapsed = ();
 
-      if (pirataBot.settings.voteSkip) {
-        if ((mehs - woots) >= (pirataBot.settings.voteSkipLimit)) {
-          API.sendChat(subChat(pirataBot.chat.voteskipexceededlimit, {name: dj.username, limit: pirataBot.settings.voteSkipLimit}));
-          if (pirataBot.settings.smartSkip && timeLeft > timeElapsed){
-            pirataBot.roomUtilities.smartSkip();
+      se (basicBot.settings.voteSkip) {
+        if ((mehs - woots)> = (basicBot.settings.voteSkipLimit)) {
+          API.sendChat (subChat (basicBot.chat.voteskipexceededlimit, {name: dj.username, limite: basicBot.settings.voteSkipLimit}));
+          if (basicBot.settings.smartSkip && timeleft> timeElapsed) {
+            basicBot.roomUtilities.smartSkip ();
           }
-          else {
-            API.moderateForceSkip();
+          outro {
+            API.moderateForceSkip ();
           }
         }
       }
 
     },
     eventCurateupdate: function (obj) {
-      for (var i = 0; i < pirataBot.room.users.length; i++) {
-        if (pirataBot.room.users[i].id === obj.user.id) {
-          pirataBot.room.users[i].votes.curate++;
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === obj.user.id) {
+          basicBot.room.users [i] .votes.curate ++;
         }
       }
     },
     eventDjadvance: function (obj) {
-      if (pirataBot.settings.autowoot) {
-        $("#woot").click(); // autowoot
+      se (basicBot.settings.autowoot) {
+        . $ ("# Woot") clique (); // Autowoot
       }
 
-      var user = pirataBot.userUtilities.lookupUser(obj.dj.id)
-      for(var i = 0; i < pirataBot.room.users.length; i++){
-        if(pirataBot.room.users[i].id === user.id){
-          pirataBot.room.users[i].lastDC = {
-            time: null,
-            position: null,
+      usuário var = basicBot.userUtilities.lookupUser (obj.dj.id)
+      for (var i = 0; i <basicBot.room.users.length; i ++) {
+        if (basicBot.room.users [i] .id === user.id) {
+          basicBot.room.users [i] .lastDC = {
+            tempo: nulo,
+            posição: null,
             songCount: 0
           };
         }
       }
 
       var lastplay = obj.lastPlay;
-      if (typeof lastplay === 'undefined') return;
-      if (pirataBot.settings.songstats) {
-        if (typeof pirataBot.chat.songstatistics === "undefined") {
-          API.sendChat("/me " + lastplay.media.author + " - " + lastplay.media.title + ": " + lastplay.score.positive + "W/" + lastplay.score.grabs + "G/" + lastplay.score.negative + "M.")
+      if (typeof lastplay === 'indefinido') return;
+      if (basicBot.settings.songstats) {
+        if (typeof basicBot.chat.songstatistics === "undefined") {
+          API.sendChat ("/ me" + lastplay.media.author + "-" + lastplay.media.title + ":" + lastplay.score.positive + "W /" + lastplay.score.grabs + "G /" lastplay.score.negative + + "M.")
         }
-        else {
-          API.sendChat(subChat(pirataBot.chat.songstatistics, {artist: lastplay.media.author, title: lastplay.media.title, woots: lastplay.score.positive, grabs: lastplay.score.grabs, mehs: lastplay.score.negative}))
+        outro {
+          API.sendChat (subChat (basicBot.chat.song estatísticas, {artista: lastplay.media.author, título: lastplay.media.title, woots: lastplay.score.positive, ganchos: lastplay.score.grabs, mehs: lastplay. score.negative}))
         }
       }
-      pirataBot.room.roomstats.totalWoots += lastplay.score.positive;
-      pirataBot.room.roomstats.totalMehs += lastplay.score.negative;
-      pirataBot.room.roomstats.totalCurates += lastplay.score.grabs;
-      pirataBot.room.roomstats.songCount++;
-      pirataBot.roomUtilities.intervalMessage();
-      pirataBot.room.currentDJID = obj.dj.id;
+      basicBot.room.roomstats.totalWoots + = lastplay.score.positive;
+      basicBot.room.roomstats.totalMehs + = lastplay.score.negative;
+      basicBot.room.roomstats.totalCurates + = lastplay.score.grabs;
+      basicBot.room.roomstats.songCount ++;
+      basicBot.roomUtilities.intervalMessage ();
+      basicBot.room.currentDJID = obj.dj.id;
 
-      var blacklistSkip = setTimeout(function () {
+      var blacklistSkip = setTimeout (function () {
         var mid = obj.media.format + ':' + obj.media.cid;
-        for (var bl in pirataBot.room.blacklists) {
-          if (pirataBot.settings.blacklistEnabled) {
-            if (pirataBot.room.blacklists[bl].indexOf(mid) > -1) {
-              API.sendChat(subChat(pirataBot.chat.isblacklisted, {blacklist: bl}));
-              if (pirataBot.settings.smartSkip){
-                return pirataBot.roomUtilities.smartSkip();
+        for (var bl em basicBot.room.blacklists) {
+          se (basicBot.settings.blacklistEnabled) {
+            if (basicBot.room.blacklists [bl] .indexOf (mid)> -1) {
+              API.sendChat (subChat (basicBot.chat.isblacklisted, {lista negra: bl}));
+              se (basicBot.settings.smartSkip) {
+                retornar basicBot.roomUtilities.smartSkip ();
               }
-              else {
-                return API.moderateForceSkip();
+              outro {
+                retornar API.moderateForceSkip ();
               }
             }
           }
         }
       }, 2000);
-      var newMedia = obj.media;
-      var timeLimitSkip = setTimeout(function () {
-        if (pirataBot.settings.timeGuard && newMedia.duration > pirataBot.settings.maximumSongLength * 60 && !pirataBot.room.roomevent) {
+      var NewMedia = obj.media;
+      var timeLimitSkip = setTimeout (function () {
+        if (basicBot.settings.timeGuard && newMedia.duration> basicBot.settings.maximumSongLength * 60 &&! basicBot.room.roomevent) {
           var name = obj.dj.username;
-          API.sendChat(subChat(pirataBot.chat.timelimit, {name: name, maxlength: pirataBot.settings.maximumSongLength}));
-          if (pirataBot.settings.smartSkip){
-            return pirataBot.roomUtilities.smartSkip();
+          API.sendChat (subChat (basicBot.chat.timelimit, {name: nome, maxlength: basicBot.settings.maximumSongLength}));
+          se (basicBot.settings.smartSkip) {
+            retornar basicBot.roomUtilities.smartSkip ();
           }
-          else {
-            return API.moderateForceSkip();
+          outro {
+            retornar API.moderateForceSkip ();
           }
         }
       }, 2000);
-      var format = obj.media.format;
+      formato var = obj.media.format;
       var cid = obj.media.cid;
-      var naSkip = setTimeout(function () {
-        if (format == 1){
-          $.getJSON('https://www.googleapis.com/youtube/v3/videos?id=' + cid + '&key=AIzaSyDcfWu9cGaDnTjPKhg_dy9mUh6H7i4ePZ0&part=snippet&callback=?', function (track){
-            if (typeof(track.items[0]) === 'undefined'){
+      var naSkip = setTimeout (function () {
+        se (formato == 1) {
+          $ .getJSON ('Https://www.googleapis.com/youtube/v3/videos?id=' + cid + '& key = AIzaSyDcfWu9cGaDnTjPKhg_dy9mUh6H7i4ePZ0 & parte = trecho & callback =?', Function (pista) {
+            if (typeof (track.items [0]) === 'indefinido') {
               var name = obj.dj.username;
-              API.sendChat(subChat(pirataBot.chat.notavailable, {name: name}));
-              if (pirataBot.settings.smartSkip){
-                return pirataBot.roomUtilities.smartSkip();
+              API.sendChat (subChat (basicBot.chat.notavailable, {name: name}));
+              se (basicBot.settings.smartSkip) {
+                retornar basicBot.roomUtilities.smartSkip ();
               }
-              else {
-                return API.moderateForceSkip();
+              outro {
+                retornar API.moderateForceSkip ();
               }
             }
           });
         }
-        else {
-          var checkSong = SC.get('/tracks/' + cid, function (track){
-            if (typeof track.title === 'undefined'){
+        outro {
+          var checkSong = SC.get ('/ faixas /' + cid, função (faixa) {
+            if (typeof track.title === 'indefinido') {
               var name = obj.dj.username;
-              API.sendChat(subChat(pirataBot.chat.notavailable, {name: name}));
-              if (pirataBot.settings.smartSkip){
-                return pirataBot.roomUtilities.smartSkip();
+              API.sendChat (subChat (basicBot.chat.notavailable, {name: name}));
+              se (basicBot.settings.smartSkip) {
+                retornar basicBot.roomUtilities.smartSkip ();
               }
-              else {
-                return API.moderateForceSkip();
+              outro {
+                retornar API.moderateForceSkip ();
               }
             }
           });
         }
       }, 2000);
-      clearTimeout(historySkip);
-      if (pirataBot.settings.historySkip) {
+      clearTimeout (historySkip);
+      se (basicBot.settings.historySkip) {
         var alreadyPlayed = false;
-        var apihistory = API.getHistory();
+        var apihistory API.getHistory = ();
         var name = obj.dj.username;
-        var historySkip = setTimeout(function () {
-          for (var i = 0; i < apihistory.length; i++) {
-            if (apihistory[i].media.cid === obj.media.cid) {
-              pirataBot.room.historyList[i].push(+new Date());
+        var historySkip = setTimeout (function () {
+          for (var i = 0; i <apihistory.length; i ++) {
+            if (apihistory [i] .media.cid === obj.media.cid) {
+              basicBot.room.historyList [i] .faça pressão sobre (+ new Date ());
               alreadyPlayed = true;
-              API.sendChat(subChat(pirataBot.chat.songknown, {name: name}));
-              if (pirataBot.settings.smartSkip){
-                return pirataBot.roomUtilities.smartSkip();
+              API.sendChat (subChat (basicBot.chat.songknown, {name: name}));
+              se (basicBot.settings.smartSkip) {
+                retornar basicBot.roomUtilities.smartSkip ();
               }
-              else {
-                return API.moderateForceSkip();
+              outro {
+                retornar API.moderateForceSkip ();
               }
             }
           }
-          if (!alreadyPlayed) {
-            pirataBot.room.historyList.push([obj.media.cid, +new Date()]);
+          se (alreadyPlayed!) {
+            basicBot.room.historyList.push ([obj.media.cid, + new Date ()]);
           }
         }, 2000);
       }
-      if (user.ownSong) {
-        API.sendChat(subChat(pirataBot.chat.permissionownsong, {name: user.username}));
+      se (user.ownSong) {
+        API.sendChat (subChat (basicBot.chat.permissionownsong, {name: user.username}));
         user.ownSong = false;
       }
-      clearTimeout(pirataBot.room.autoskipTimer);
-      if (pirataBot.settings.autoskip) {
-        var remaining = obj.media.duration * 1000;
-        var startcid = API.getMedia().cid;
-        pirataBot.room.autoskipTimer = setTimeout(function() {
-          var endcid = API.getMedia().cid;
-          if (startcid === endcid) {
-            //API.sendChat('Song stuck, skipping...');
-            API.moderateForceSkip();
+      clearTimeout (basicBot.room.autoskipTimer);
+      se (basicBot.settings.autoskip) {
+        var restante obj.media.duration * = 1000;
+        . var startcid = API.getMedia () cid;
+        basicBot.room.autoskipTimer = setTimeout (function () {
+          . var endcid = API.getMedia () cid;
+          se (startcid === endcid) {
+            //API.sendChat('Song Preso, pular ... ');
+            API.moderateForceSkip ();
           }
-        }, remaining + 5000);
+        }, Permanecendo + 5000);
       }
-      storeToStorage();
-      sendToSocket();
+      storeToStorage ();
+      sendToSocket ();
     },
-    eventWaitlistupdate: function (users) {
-      if (users.length < 50) {
-        if (pirataBot.room.queue.id.length > 0 && pirataBot.room.queueable) {
-          pirataBot.room.queueable = false;
-          setTimeout(function () {
-            pirataBot.room.queueable = true;
+    eventWaitlistupdate: function (usuários) {
+      se (users.length <50) {
+        se (basicBot.room.queue.id.length> 0 && basicBot.room.queueable) {
+          basicBot.room.queueable = false;
+          setTimeout (function () {
+            basicBot.room.queueable = true;
           }, 500);
-          pirataBot.room.queueing++;
-          var id, pos;
-          setTimeout(
+          basicBot.room.queueing ++;
+          ID de var, pos;
+          setTimeout (
             function () {
-              id = pirataBot.room.queue.id.splice(0, 1)[0];
-              pos = pirataBot.room.queue.position.splice(0, 1)[0];
-              API.moderateAddDJ(id, pos);
-              setTimeout(
+              ID = basicBot.room.queue.id.splice (0, 1) [0];
+              pos basicBot.room.queue.position.splice = (0, 1) [0];
+              API.moderateAddDJ (id, pos);
+              setTimeout (
                 function (id, pos) {
-                  API.moderateMoveDJ(id, pos);
-                  pirataBot.room.queueing--;
-                  if (pirataBot.room.queue.id.length === 0) setTimeout(function () {
-                    pirataBot.roomUtilities.booth.unlockBooth();
+                  API.moderateMoveDJ (id, pos);
+                  basicBot.room.queueing--;
+                  if (basicBot.room.queue.id.length === 0) setTimeout (function () {
+                    basicBot.roomUtilities.booth.unlockBooth ();
                   }, 1000);
                 }, 1000, id, pos);
-              }, 1000 + pirataBot.room.queueing * 2500);
+              }, 1000 + basicBot.room.queueing * 2500);
             }
           }
-          for (var i = 0; i < users.length; i++) {
-            var user = pirataBot.userUtilities.lookupUser(users[i].id);
-            pirataBot.userUtilities.updatePosition(user, API.getWaitListPosition(users[i].id) + 1);
+          for (var i = 0; i <users.length; i ++) {
+            usuário var = basicBot.userUtilities.lookupUser (usuários [i] .id);
+            basicBot.userUtilities.updatePosition (usuário, API.getWaitListPosition (usuários [i] .id) + 1);
           }
         },
         chatcleaner: function (chat) {
-          if (!pirataBot.settings.filterChat) return false;
-          if (pirataBot.userUtilities.getPermission(chat.uid) > 1) return false;
+          Se retornar falso (basicBot.settings.filterChat!);
+          if (basicBot.userUtilities.getPermission (chat.uid)> 1) return false;
           var msg = chat.message;
-          var containsLetters = false;
-          for (var i = 0; i < msg.length; i++) {
-            ch = msg.charAt(i);
-            if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch === ':' || ch === '^') containsLetters = true;
+          containsLetters var = false;
+          for (var i = 0; i <msg.length; i ++) {
+            CH = msg.charAt (i);
+            if ((ch> = 'a' && ch <= 'z') || (ch> = 'A' && ch <= 'Z') || (ch> = '0' && ch <= '9' ) || ch === ':' || ch === '^') containsLetters = true;
           }
           if (msg === '') {
             return true;
           }
-          if (!containsLetters && (msg.length === 1 || msg.length > 3)) return true;
-          msg = msg.replace(/[ ,;.:\/=~+%^*\-\\"'&@#]/g, '');
-          var capitals = 0;
-          var ch;
-          for (var i = 0; i < msg.length; i++) {
-            ch = msg.charAt(i);
-            if (ch >= 'A' && ch <= 'Z') capitals++;
+          if (containsLetters && (=== msg.length 1 || msg.length> 3)!) return true;
+          msg = msg.replace (/ [,;:. \ / = ~ +% ^ * \ - \\ "'& @ #] / g,' ');
+          var capitais = 0;
+          var CH;
+          for (var i = 0; i <msg.length; i ++) {
+            CH = msg.charAt (i);
+            if (ch> = 'A' && ch <= 'Z') capitais ++;
           }
-          if (capitals >= 40) {
-            API.sendChat(subChat(pirataBot.chat.caps, {name: chat.un}));
+          if (capitais> = 40) {
+            API.sendChat (subChat (basicBot.chat.caps, {name: chat.un}));
             return true;
           }
-          msg = msg.toLowerCase();
-          if (msg === 'skip') {
-            API.sendChat(subChat(pirataBot.chat.askskip, {name: chat.un}));
+          msg = msg.toLowerCase ();
+          if (msg === 'pular') {
+            API.sendChat (subChat (basicBot.chat.askskip, {name: chat.un}));
             return true;
           }
-          for (var j = 0; j < pirataBot.chatUtilities.spam.length; j++) {
-            if (msg === pirataBot.chatUtilities.spam[j]) {
-              API.sendChat(subChat(pirataBot.chat.spam, {name: chat.un}));
+          para (var j = 0; j <basicBot.chatUtilities.spam.length; j ++) {
+            if (msg === basicBot.chatUtilities.spam [j]) {
+              API.sendChat (subChat (basicBot.chat.spam, {name: chat.un}));
               return true;
             }
           }
@@ -1135,524 +1135,524 @@
         chatUtilities: {
           chatFilter: function (chat) {
             var msg = chat.message;
-            var perm = pirataBot.userUtilities.getPermission(chat.uid);
-            var user = pirataBot.userUtilities.lookupUser(chat.uid);
-            var isMuted = false;
-            for (var i = 0; i < pirataBot.room.mutedUsers.length; i++) {
-              if (pirataBot.room.mutedUsers[i] === chat.uid) isMuted = true;
+            var perm = basicBot.userUtilities.getPermission (chat.uid);
+            usuário var = basicBot.userUtilities.lookupUser (chat.uid);
+            var IsMuted = false;
+            for (var i = 0; i <basicBot.room.mutedUsers.length; i ++) {
+              if (basicBot.room.mutedUsers [i] === chat.uid) IsMuted = true;
             }
-            if (isMuted) {
-              API.moderateDeleteChat(chat.cid);
+            se (IsMuted) {
+              API.moderateDeleteChat (chat.cid);
               return true;
             }
-            if (pirataBot.settings.lockdownEnabled) {
+            se (basicBot.settings.lockdownEnabled) {
               if (perm === 0) {
-                API.moderateDeleteChat(chat.cid);
+                API.moderateDeleteChat (chat.cid);
                 return true;
               }
             }
-            if (pirataBot.chatcleaner(chat)) {
-              API.moderateDeleteChat(chat.cid);
+            if (basicBot.chatcleaner (chat)) {
+              API.moderateDeleteChat (chat.cid);
               return true;
             }
-            if (pirataBot.settings.cmdDeletion && msg.startsWith(pirataBot.settings.commandLiteral)) {
-              API.moderateDeleteChat(chat.cid);
+            if (basicBot.settings.cmdDeletion && msg.startsWith (basicBot.settings.commandLiteral)) {
+              API.moderateDeleteChat (chat.cid);
             }
-            /**
-            var plugRoomLinkPatt = /(\bhttps?:\/\/(www.)?plug\.dj[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-            if (plugRoomLinkPatt.exec(msg)) {
+            / **
+            var plugRoomLinkPatt = /(\bhttps?:\/\/(www.)?plug\.dj[-A-Z0-9+&@#\/%?=~_|!:,.;]*[- A-Z0-9 + & # @ \ /% = ~ _ |]) / ig;
+            if (plugRoomLinkPatt.exec (msg)) {
             if (perm === 0) {
-            API.sendChat(subChat(pirataBot.chat.roomadvertising, {name: chat.un}));
-            API.moderateDeleteChat(chat.cid);
+            API.sendChat (subChat (basicBot.chat.roomadvertising, {name: chat.un}));
+            API.moderateDeleteChat (chat.cid);
             return true;
             }
             }
-            **/
-            if (msg.indexOf('http://adf.ly/') > -1) {
-              API.moderateDeleteChat(chat.cid);
-              API.sendChat(subChat(pirataBot.chat.adfly, {name: chat.un}));
+            ** /
+            se (msg.indexOf ('http://adf.ly/')> -1) {
+              API.moderateDeleteChat (chat.cid);
+              API.sendChat (subChat (basicBot.chat.adfly, {name: chat.un}));
               return true;
             }
-            if (msg.indexOf('autojoin was not enabled') > 0 || msg.indexOf('AFK message was not enabled') > 0 || msg.indexOf('!afkdisable') > 0 || msg.indexOf('!joindisable') > 0 || msg.indexOf('autojoin disabled') > 0 || msg.indexOf('AFK message disabled') > 0) {
-              API.moderateDeleteChat(chat.cid);
+            if (msg.indexOf ('autojoin não foi ativado')> 0 || msg.indexOf ('AFK mensagem não foi ativado')> 0 || msg.indexOf ('! afkdisable')> 0 || msg.indexOf ( '! joindisable')> 0 || msg.indexOf ('autojoin deficientes')> 0 || msg.indexOf ('AFK mensagem desativado') 0>) {
+              API.moderateDeleteChat (chat.cid);
               return true;
             }
 
-            var rlJoinChat = pirataBot.chat.roulettejoin;
-            var rlLeaveChat = pirataBot.chat.rouletteleave;
+            var rlJoinChat = basicBot.chat.roulettejoin;
+            var rlLeaveChat = basicBot.chat.rouletteleave;
 
-            var joinedroulette = rlJoinChat.split('%%NAME%%');
-            if (joinedroulette[1].length > joinedroulette[0].length) joinedroulette = joinedroulette[1];
-            else joinedroulette = joinedroulette[0];
+            var joinedroulette = rlJoinChat.split ('%% NAME %%');
+            se (joinedroulette [1] .length> joinedroulette [0] .length) joinedroulette = joinedroulette [1];
+            mais joinedroulette = joinedroulette [0];
 
-            var leftroulette = rlLeaveChat.split('%%NAME%%');
-            if (leftroulette[1].length > leftroulette[0].length) leftroulette = leftroulette[1];
-            else leftroulette = leftroulette[0];
+            var leftroulette = rlLeaveChat.split ('%% NAME %%');
+            se (leftroulette [1] .length> leftroulette [0] .length) leftroulette = leftroulette [1];
+            mais leftroulette = leftroulette [0];
 
-            if ((msg.indexOf(joinedroulette) > -1 || msg.indexOf(leftroulette) > -1) && chat.uid === pirataBot.loggedInID) {
-              setTimeout(function (id) {
-                API.moderateDeleteChat(id);
+            if ((msg.indexOf (joinedroulette)> -1 || msg.indexOf (leftroulette) -1>) && chat.uid === basicBot.loggedInID) {
+              setTimeout (function (id) {
+                API.moderateDeleteChat (id);
               }, 5 * 1000, chat.cid);
               return true;
             }
             return false;
           },
           commandCheck: function (chat) {
-            var cmd;
-            if (chat.message.charAt(0) === pirataBot.settings.commandLiteral) {
-              var space = chat.message.indexOf(' ');
-              if (space === -1) {
+            cmd var;
+            se (chat.message.charAt (0) === basicBot.settings.commandLiteral) {
+              espaço var = chat.message.indexOf ('');
+              se (espaço === -1) {
                 cmd = chat.message;
               }
-              else cmd = chat.message.substring(0, space);
+              mais cmd = chat.message.substring (0, espaço);
             }
-            else return false;
-            var userPerm = pirataBot.userUtilities.getPermission(chat.uid);
-            //console.log("name: " + chat.un + ", perm: " + userPerm);
-            if (chat.message !== pirataBot.settings.commandLiteral + 'join' && chat.message !== pirataBot.settings.commandLiteral + "leave") {
-              if (userPerm === 0 && !pirataBot.room.usercommand) return void (0);
-              if (!pirataBot.room.allcommand) return void (0);
+            outra coisa return false;
+            var userPerm = basicBot.userUtilities.getPermission (chat.uid);
+            //console.log("name: "+ chat.un +", perm: "+ userPerm);
+            if (chat.message! == basicBot.settings.commandLiteral + 'juntar' && chat.message! == basicBot.settings.commandLiteral + "sair") {
+              if (! userPerm === 0 && basicBot.room.usercommand) vazio retorno (0);
+              if (! basicBot.room.allcommand) vazio retorno (0);
             }
-            if (chat.message === pirataBot.settings.commandLiteral + 'eta' && pirataBot.settings.etaRestriction) {
-              if (userPerm < 2) {
-                var u = pirataBot.userUtilities.lookupUser(chat.uid);
-                if (u.lastEta !== null && (Date.now() - u.lastEta) < 1 * 60 * 60 * 1000) {
-                  API.moderateDeleteChat(chat.cid);
-                  return void (0);
+            if (chat.message === basicBot.settings.commandLiteral + 'eta' && basicBot.settings.etaRestriction) {
+              se (userPerm <2) {
+                var u = basicBot.userUtilities.lookupUser (chat.uid);
+                if (! u.lastEta == null && (Date.now () - u.lastEta) <1 * 60 * 60 * 1000) {
+                  API.moderateDeleteChat (chat.cid);
+                  retorno void (0);
                 }
-                else u.lastEta = Date.now();
+                mais u.lastEta = Date.now ();
               }
             }
-            var executed = false;
+            var executado = false;
 
-            for (var comm in pirataBot.commands) {
-              var cmdCall = pirataBot.commands[comm].command;
-              if (!Array.isArray(cmdCall)) {
+            for (var comm em basicBot.commands) {
+              var cmdCall = basicBot.commands [comm] .command;
+              if (! Array.isArray (cmdCall)) {
                 cmdCall = [cmdCall]
               }
-              for (var i = 0; i < cmdCall.length; i++) {
-                if (pirataBot.settings.commandLiteral + cmdCall[i] === cmd) {
-                  pirataBot.commands[comm].functionality(chat, pirataBot.settings.commandLiteral + cmdCall[i]);
-                  executed = true;
-                  break;
+              for (var i = 0; i <cmdCall.length; i ++) {
+                if (basicBot.settings.commandLiteral + cmdCall [i] === cmd) {
+                  basicBot.commands [comm] .functionality (chat, basicBot.settings.commandLiteral + cmdCall [i]);
+                  executado = true;
+                  parar;
                 }
               }
             }
 
-            if (executed && userPerm === 0) {
-              pirataBot.room.usercommand = false;
-              setTimeout(function () {
-                pirataBot.room.usercommand = true;
-              }, pirataBot.settings.commandCooldown * 1000);
+            if (executada && userPerm === 0) {
+              basicBot.room.usercommand = false;
+              setTimeout (function () {
+                basicBot.room.usercommand = true;
+              }, BasicBot.settings.commandCooldown * 1000);
             }
-            if (executed) {
-              /*if (pirataBot.settings.cmdDeletion) {
-              API.moderateDeleteChat(chat.cid);
-              }*/
+            se (executado) {
+              / * If (basicBot.settings.cmdDeletion) {
+              API.moderateDeleteChat (chat.cid);
+              } * /
 
-              //pirataBot.room.allcommand = false;
-              //setTimeout(function () {
-              pirataBot.room.allcommand = true;
-              //}, 5 * 1000);
+              //basicBot.room.allcommand = false;
+              // SetTimeout (function () {
+              basicBot.room.allcommand = true;
+              } //, 5 * 1000);
             }
-            return executed;
+            voltar executadas;
           },
-          action: function (chat) {
-            var user = pirataBot.userUtilities.lookupUser(chat.uid);
-            if (chat.type === 'message') {
-              for (var j = 0; j < pirataBot.room.users.length; j++) {
-                if (pirataBot.userUtilities.getUser(pirataBot.room.users[j]).id === chat.uid) {
-                  pirataBot.userUtilities.setLastActivity(pirataBot.room.users[j]);
+          ação: function (chat) {
+            usuário var = basicBot.userUtilities.lookupUser (chat.uid);
+            if (chat.type === 'mensagem') {
+              para (var j = 0; j <basicBot.room.users.length; j ++) {
+                if (basicBot.userUtilities.getUser (basicBot.room.users [j]). id === chat.uid) {
+                  basicBot.userUtilities.setLastActivity (basicBot.room.users [j]);
                 }
 
               }
             }
-            pirataBot.room.roomstats.chatmessages++;
+            basicBot.room.roomstats.chatmessages ++;
           },
-          spam: [
-            'hueh', 'hu3', 'brbr', 'heu', 'brbr', 'kkkk', 'spoder', 'mafia', 'zuera', 'zueira',
-            'zueria', 'aehoo', 'aheu', 'alguem', 'algum', 'brazil', 'zoeira', 'fuckadmins', 'affff', 'vaisefoder', 'huenaarea',
-            'hitler', 'ashua', 'ahsu', 'ashau', 'lulz', 'huehue', 'hue', 'huehuehue', 'merda', 'pqp', 'puta', 'mulher', 'pula', 'retarda', 'caralho', 'filha', 'ppk',
-            'gringo', 'fuder', 'foder', 'hua', 'ahue', 'modafuka', 'modafoka', 'mudafuka', 'mudafoka', 'ooooooooooooooo', 'foda'
+          Spam: [
+            'HUEH', 'HU3', 'brbr "," urânio altamente enriquecido "," brbr "," kkkk "," spoder', 'máfia', 'zuera', 'zueira',
+            'Zueria', 'aehoo', 'aheu', 'alguem', 'algum', 'Brasil', 'zoeira', 'fuckadmins', 'affff', 'vaisefoder', 'huenaarea',
+            'Hitler', 'ashua', 'ahsu', 'ashau "," lulz "," Huehue', 'tonalidade', 'huehuehue', 'merda', 'PQP', 'puta', 'mulher', 'pula ',' retarda ',' caralho ',' filha ',' ppk ',
+            'Gringo', 'fuder', 'foder', 'hua', 'ahue', 'modafuka', 'modafoka', 'mudafuka', 'mudafoka', 'ooooooooooooooo', 'foda'
           ],
-          curses: [
-            'nigger', 'faggot', 'nigga', 'niqqa', 'motherfucker', 'modafocka'
+          amaldiçoa: [
+            'Nigger', 'bicha', 'mano', 'niqqa "," filho da puta "," modafocka'
           ]
         },
         connectAPI: function () {
           this.proxy = {
-            eventChat: $.proxy(this.eventChat, this),
-            eventUserskip: $.proxy(this.eventUserskip, this),
-            eventUserjoin: $.proxy(this.eventUserjoin, this),
-            eventUserleave: $.proxy(this.eventUserleave, this),
-            //eventFriendjoin: $.proxy(this.eventFriendjoin, this),
-            eventVoteupdate: $.proxy(this.eventVoteupdate, this),
-            eventCurateupdate: $.proxy(this.eventCurateupdate, this),
-            eventRoomscoreupdate: $.proxy(this.eventRoomscoreupdate, this),
-            eventDjadvance: $.proxy(this.eventDjadvance, this),
-            //eventDjupdate: $.proxy(this.eventDjupdate, this),
-            eventWaitlistupdate: $.proxy(this.eventWaitlistupdate, this),
-            eventVoteskip: $.proxy(this.eventVoteskip, this),
-            eventModskip: $.proxy(this.eventModskip, this),
-            eventChatcommand: $.proxy(this.eventChatcommand, this),
-            eventHistoryupdate: $.proxy(this.eventHistoryupdate, this),
+            eventChat: $ .proxy (this.eventChat, this),
+            eventUserskip: $ .proxy (this.eventUserskip, this),
+            eventUserjoin: $ .proxy (this.eventUserjoin, this),
+            eventUserleave: $ .proxy (this.eventUserleave, this),
+            // EventFriendjoin: $ .proxy (this.eventFriendjoin, this),
+            eventVoteupdate: $ .proxy (this.eventVoteupdate, this),
+            eventCurateupdate: $ .proxy (this.eventCurateupdate, this),
+            eventRoomscoreupdate: $ .proxy (this.eventRoomscoreupdate, this),
+            eventDjadvance: $ .proxy (this.eventDjadvance, this),
+            // EventDjupdate: $ .proxy (this.eventDjupdate, this),
+            eventWaitlistupdate: $ .proxy (this.eventWaitlistupdate, this),
+            eventVoteskip: $ .proxy (this.eventVoteskip, this),
+            eventModskip: $ .proxy (this.eventModskip, this),
+            eventChatcommand: $ .proxy (this.eventChatcommand, this),
+            eventHistoryupdate: $ .proxy (this.eventHistoryupdate, this),
 
           };
-          API.on(API.CHAT, this.proxy.eventChat);
-          API.on(API.USER_SKIP, this.proxy.eventUserskip);
-          API.on(API.USER_JOIN, this.proxy.eventUserjoin);
-          API.on(API.USER_LEAVE, this.proxy.eventUserleave);
-          API.on(API.VOTE_UPDATE, this.proxy.eventVoteupdate);
-          API.on(API.GRAB_UPDATE, this.proxy.eventCurateupdate);
-          API.on(API.ROOM_SCORE_UPDATE, this.proxy.eventRoomscoreupdate);
-          API.on(API.ADVANCE, this.proxy.eventDjadvance);
-          API.on(API.WAIT_LIST_UPDATE, this.proxy.eventWaitlistupdate);
-          API.on(API.MOD_SKIP, this.proxy.eventModskip);
-          API.on(API.CHAT_COMMAND, this.proxy.eventChatcommand);
-          API.on(API.HISTORY_UPDATE, this.proxy.eventHistoryupdate);
+          API.on (API.CHAT, this.proxy.eventChat);
+          API.on (API.USER_SKIP, this.proxy.eventUserskip);
+          API.on (API.USER_JOIN, this.proxy.eventUserjoin);
+          API.on (API.USER_LEAVE, this.proxy.eventUserleave);
+          API.on (API.VOTE_UPDATE, this.proxy.eventVoteupdate);
+          API.on (API.GRAB_UPDATE, this.proxy.eventCurateupdate);
+          API.on (API.ROOM_SCORE_UPDATE, this.proxy.eventRoomscoreupdate);
+          API.on (API.ADVANCE, this.proxy.eventDjadvance);
+          API.on (API.WAIT_LIST_UPDATE, this.proxy.eventWaitlistupdate);
+          API.on (API.MOD_SKIP, this.proxy.eventModskip);
+          API.on (API.CHAT_COMMAND, this.proxy.eventChatcommand);
+          API.on (API.HISTORY_UPDATE, this.proxy.eventHistoryupdate);
         },
         disconnectAPI: function () {
-          API.off(API.CHAT, this.proxy.eventChat);
-          API.off(API.USER_SKIP, this.proxy.eventUserskip);
-          API.off(API.USER_JOIN, this.proxy.eventUserjoin);
-          API.off(API.USER_LEAVE, this.proxy.eventUserleave);
-          API.off(API.VOTE_UPDATE, this.proxy.eventVoteupdate);
-          API.off(API.CURATE_UPDATE, this.proxy.eventCurateupdate);
-          API.off(API.ROOM_SCORE_UPDATE, this.proxy.eventRoomscoreupdate);
-          API.off(API.ADVANCE, this.proxy.eventDjadvance);
-          API.off(API.WAIT_LIST_UPDATE, this.proxy.eventWaitlistupdate);
-          API.off(API.MOD_SKIP, this.proxy.eventModskip);
-          API.off(API.CHAT_COMMAND, this.proxy.eventChatcommand);
-          API.off(API.HISTORY_UPDATE, this.proxy.eventHistoryupdate);
+          API.off (API.CHAT, this.proxy.eventChat);
+          API.off (API.USER_SKIP, this.proxy.eventUserskip);
+          API.off (API.USER_JOIN, this.proxy.eventUserjoin);
+          API.off (API.USER_LEAVE, this.proxy.eventUserleave);
+          API.off (API.VOTE_UPDATE, this.proxy.eventVoteupdate);
+          API.off (API.CURATE_UPDATE, this.proxy.eventCurateupdate);
+          API.off (API.ROOM_SCORE_UPDATE, this.proxy.eventRoomscoreupdate);
+          API.off (API.ADVANCE, this.proxy.eventDjadvance);
+          API.off (API.WAIT_LIST_UPDATE, this.proxy.eventWaitlistupdate);
+          API.off (API.MOD_SKIP, this.proxy.eventModskip);
+          API.off (API.CHAT_COMMAND, this.proxy.eventChatcommand);
+          API.off (API.HISTORY_UPDATE, this.proxy.eventHistoryupdate);
         },
-        startup: function () {
+        inicialização: function () {
           Function.prototype.toString = function () {
-            return 'Function.'
+            'Função'. retorno
           };
-          var u = API.getUser();
-          if (pirataBot.userUtilities.getPermission(u) < 2) return API.chatLog(pirataBot.chat.greyuser);
-          if (pirataBot.userUtilities.getPermission(u) === 2) API.chatLog(pirataBot.chat.bouncer);
-          pirataBot.connectAPI();
+          var u = API.getUser ();
+          if (basicBot.userUtilities.getPermission (u) <2) retornar API.chatLog (basicBot.chat.greyuser);
+          se (basicBot.userUtilities.getPermission (u) === 2) API.chatLog (basicBot.chat.bouncer);
+          basicBot.connectAPI ();
           API.moderateDeleteChat = function (cid) {
-            $.ajax({
+            $ .ajax ({
               url: "https://plug.dj/_/chat/" + cid,
-              type: "DELETE"
+              digite: "DELETE"
             })
           };
 
-          pirataBot.room.name = window.location.pathname;
-          var Check;
+          basicBot.room.name = window.location.pathname;
+          var Verifique;
 
-          console.log(pirataBot.room.name);
+          console.log (basicBot.room.name);
 
-          var detect = function(){
-            if(pirataBot.room.name != window.location.pathname){
-              console.log("Killing bot after room change.");
-              storeToStorage();
-              pirataBot.disconnectAPI();
-              setTimeout(function () {
-                kill();
+          var detectar = function () {
+            se (basicBot.room.name! = window.location.pathname) {
+              console.log ("Killing bot após mudança de quarto.");
+              storeToStorage ();
+              basicBot.disconnectAPI ();
+              setTimeout (function () {
+                matar ();
               }, 1000);
-              if (pirataBot.settings.roomLock){
-                window.location = 'https://plug.dj' + pirataBot.room.name;
+              se (basicBot.settings.roomLock) {
+                window.location = "https://plug.dj '+ basicBot.room.name;
               }
-              else {
-                clearInterval(Check);
+              outro {
+                clearInterval (Check);
               }
             }
           };
 
-          Check = setInterval(function(){ detect() }, 2000);
+          Confira = setInterval (function () {detectar ()}, 2000);
 
-          retrieveSettings();
-          retrieveFromStorage();
-          window.bot = pirataBot;
-          pirataBot.roomUtilities.updateBlacklists();
-          setInterval(pirataBot.roomUtilities.updateBlacklists, 60 * 60 * 1000);
-          pirataBot.getNewBlacklistedSongs = pirataBot.roomUtilities.exportNewBlacklistedSongs;
-          pirataBot.logNewBlacklistedSongs = pirataBot.roomUtilities.logNewBlacklistedSongs;
-          if (pirataBot.room.roomstats.launchTime === null) {
-            pirataBot.room.roomstats.launchTime = Date.now();
+          retrieveSettings ();
+          retrieveFromStorage ();
+          window.bot = basicBot;
+          basicBot.roomUtilities.updateBlacklists ();
+          setInterval (basicBot.roomUtilities.updateBlacklists, 60 * 60 * 1000);
+          basicBot.getNewBlacklistedSongs = basicBot.roomUtilities.exportNewBlacklistedSongs;
+          basicBot.logNewBlacklistedSongs = basicBot.roomUtilities.logNewBlacklistedSongs;
+          if (basicBot.room.roomstats.launchTime === null) {
+            basicBot.room.roomstats.launchTime Date.now = ();
           }
 
-          for (var j = 0; j < pirataBot.room.users.length; j++) {
-            pirataBot.room.users[j].inRoom = false;
+          para (var j = 0; j <basicBot.room.users.length; j ++) {
+            basicBot.room.users [j] .inRoom = false;
           }
-          var userlist = API.getUsers();
-          for (var i = 0; i < userlist.length; i++) {
-            var known = false;
+          var UserList API.getUsers = ();
+          for (var i = 0; i <userlist.length; i ++) {
+            var conhecido = false;
             var ind = null;
-            for (var j = 0; j < pirataBot.room.users.length; j++) {
-              if (pirataBot.room.users[j].id === userlist[i].id) {
-                known = true;
+            para (var j = 0; j <basicBot.room.users.length; j ++) {
+              if (basicBot.room.users [j] .id === userlist [i] .id) {
+                conhecido = true;
                 ind = j;
               }
             }
-            if (known) {
-              pirataBot.room.users[ind].inRoom = true;
+            se (conhecido) {
+              basicBot.room.users [ind] .inRoom = true;
             }
-            else {
-              pirataBot.room.users.push(new pirataBot.User(userlist[i].id, userlist[i].username));
-              ind = pirataBot.room.users.length - 1;
+            outro {
+              basicBot.room.users.push (novo basicBot.User (userlist [i] .id, userlist [i] .username));
+              ind basicBot.room.users.length = - 1;
             }
-            var wlIndex = API.getWaitListPosition(pirataBot.room.users[ind].id) + 1;
-            pirataBot.userUtilities.updatePosition(pirataBot.room.users[ind], wlIndex);
+            var wlIndex = API.getWaitListPosition (basicBot.room.users [ind] .id) + 1;
+            basicBot.userUtilities.updatePosition (basicBot.room.users [ind], wlIndex);
           }
-          pirataBot.room.afkInterval = setInterval(function () {
-            pirataBot.roomUtilities.afkCheck()
+          basicBot.room.afkInterval = setInterval (function () {
+            basicBot.roomUtilities.afkCheck ()
           }, 10 * 1000);
-          pirataBot.room.autodisableInterval = setInterval(function () {
-            pirataBot.room.autodisableFunc();
+          basicBot.room.autodisableInterval = setInterval (function () {
+            basicBot.room.autodisableFunc ();
           }, 60 * 60 * 1000);
-          pirataBot.loggedInID = API.getUser().id;
-          pirataBot.status = true;
-          API.sendChat('/cap ' + pirataBot.settings.startupCap);
-          API.setVolume(pirataBot.settings.startupVolume);
-          if (pirataBot.settings.autowoot) {
-            $("#woot").click();
+          basicBot.loggedInID = API.getUser () id.;
+          basicBot.status = true;
+          API.sendChat ('/ cap' + basicBot.settings.startupCap);
+          API.setVolume (basicBot.settings.startupVolume);
+          se (basicBot.settings.autowoot) {
+            . $ ("# Woot") clique ();
           }
-          if (pirataBot.settings.startupEmoji) {
-            var emojibuttonoff = $(".icon-emoji-off");
-            if (emojibuttonoff.length > 0) {
-              emojibuttonoff[0].click();
+          se (basicBot.settings.startupEmoji) {
+            var emojibuttonoff = $ ("icon-emoji-off.");
+            if (emojibuttonoff.length> 0) {
+              emojibuttonoff [0] .click ();
             }
-            API.chatLog(':smile: Emojis enabled.');
+            API.chatLog (': sorrir: Emojis habilitado.');
           }
-          else {
-            var emojibuttonon = $(".icon-emoji-on");
-            if (emojibuttonon.length > 0) {
-              emojibuttonon[0].click();
+          outro {
+            var emojibuttonon = $ ("ícone-emoji diante.");
+            if (emojibuttonon.length> 0) {
+              emojibuttonon [0] .click ();
             }
-            API.chatLog('Emojis disabled.');
+            API.chatLog ('Emojis desativado.');
           }
-          API.chatLog('Avatars capped at ' + pirataBot.settings.startupCap);
-          API.chatLog('Volume set to ' + pirataBot.settings.startupVolume);
-          socket();
-          loadChat(API.sendChat(subChat(pirataBot.chat.online, {botname: pirataBot.settings.botName, version: pirataBot.version})));
+          API.chatLog ('Avatares limitado a' + basicBot.settings.startupCap);
+          API.chatLog ('Volume definido como' + basicBot.settings.startupVolume);
+          socket ();
+          loadChat (API.sendChat (subChat (basicBot.chat.online, {botname: basicBot.settings.botName, versão: basicBot.version})));
         },
-        commands: {
-          executable: function (minRank, chat) {
-            var id = chat.uid;
-            var perm = pirataBot.userUtilities.getPermission(id);
+        comandos: {
+          executável: function (minRank, chat) {
+            id = var chat.uid;
+            var perm = basicBot.userUtilities.getPermission (id);
             var minPerm;
             switch (minRank) {
-              case 'admin':
+              caso 'admin':
               minPerm = 10;
-              break;
-              case 'ambassador':
+              parar;
+              caso "embaixador":
               minPerm = 7;
-              break;
-              case 'host':
+              parar;
+              caso 'host':
               minPerm = 5;
-              break;
-              case 'cohost':
+              parar;
+              caso 'CoHost':
               minPerm = 4;
-              break;
-              case 'manager':
+              parar;
+              gerente de caso ':
               minPerm = 3;
-              break;
-              case 'mod':
-              if (pirataBot.settings.bouncerPlus) {
+              parar;
+              caso 'mod':
+              se (basicBot.settings.bouncerPlus) {
                 minPerm = 2;
               }
-              else {
+              outro {
                 minPerm = 3;
               }
-              break;
-              case 'bouncer':
+              parar;
+              caso 'saltador':
               minPerm = 2;
-              break;
-              case 'residentdj':
+              parar;
+              caso 'residentdj':
               minPerm = 1;
-              break;
-              case 'user':
+              parar;
+              caso 'user':
               minPerm = 0;
-              break;
-              default:
-              API.chatLog('error assigning minimum permission');
+              parar;
+              padrão:
+              API.chatLog ('atribuindo permissão mínima de erro');
             }
-            return perm >= minPerm;
+            retornar perm> = minPerm;
 
           },
-          /**
-          command: {
-          command: 'cmd',
-          rank: 'user/bouncer/mod/manager',
-          type: 'startsWith/exact',
-          functionality: function(chat, cmd){
-          if(this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-          if( !pirataBot.commands.executable(this.rank, chat) ) return void (0);
-          else{
+          / **
+          comando: {
+          comando: "cmd",
+          classificação: 'user / leão de chácara / mod / manager',
+          digite: 'startsWith / exato,
+          funcionalidade: function (bate-papo, cmd) {
+          if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+          (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+          outro {
 
           }
           }
           },
-          **/
+          ** /
 
-          activeCommand: {
-            command: 'active',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+          ActiveCommand: {
+            comando: 'ativa',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var now = Date.now();
-                var chatters = 0;
-                var time;
+                var agora Date.now = ();
+                chatters var = 0;
+                var tempo;
 
-                var launchT = pirataBot.room.roomstats.launchTime;
-                var durationOnline = Date.now() - launchT;
-                var since = durationOnline / 1000;
+                var launchT = basicBot.room.roomstats.launchTime;
+                var durationOnline = Date.now () - launchT;
+                var desde durationOnline = / 1000;
 
-                if (msg.length === cmd.length) time = since;
-                else {
-                  time = msg.substring(cmd.length + 1);
-                  if (isNaN(time)) return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                se (msg.length === cmd.length) = tempo desde;
+                outro {
+                  tempo = msg.substring (cmd.length + 1);
+                  if (isNaN (tempo)) return API.sendChat (subChat (basicBot.chat.invalidtime, {name: chat.un}));
                 }
-                for (var i = 0; i < pirataBot.room.users.length; i++) {
-                  userTime = pirataBot.userUtilities.getLastActivity(pirataBot.room.users[i]);
-                  if ((now - userTime) <= (time * 60 * 1000)) {
-                    chatters++;
+                for (var i = 0; i <basicBot.room.users.length; i ++) {
+                  userTime = basicBot.userUtilities.getLastActivity (basicBot.room.users [i]);
+                  if ((agora - userTime) <= (hora * 60 * 1000)) {
+                    chatters ++;
                   }
                 }
-                API.sendChat(subChat(pirataBot.chat.activeusersintime, {name: chat.un, amount: chatters, time: time}));
+                API.sendChat (subChat (basicBot.chat.activeusersintime, {name: chat.un, quantidade: vibra, tempo: time}));
               }
             }
           },
 
           addCommand: {
-            command: 'add',
-            rank: 'mod',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: "adicionar",
+            classificação: 'mod',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substr(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (msg.length > cmd.length + 2) {
-                  if (typeof user !== 'undefined') {
-                    if (pirataBot.room.roomevent) {
-                      pirataBot.room.eventArtists.push(user.id);
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substr (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                se (msg.length> cmd.length + 2) {
+                  if (typeof usuário! == 'indefinido') {
+                    se (basicBot.room.roomevent) {
+                      basicBot.room.eventArtists.push (user.id);
                     }
-                    API.moderateAddDJ(user.id);
-                  } else API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
+                    API.moderateAddDJ (user.id);
+                  } Else API.sendChat (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
                 }
               }
             }
           },
 
           afklimitCommand: {
-            command: 'afklimit',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'afklimit',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nolimitspecified, {name: chat.un}));
-                var limit = msg.substring(cmd.length + 1);
-                if (!isNaN(limit)) {
-                  pirataBot.settings.maximumAfk = parseInt(limit, 10);
-                  API.sendChat(subChat(pirataBot.chat.maximumafktimeset, {name: chat.un, time: pirataBot.settings.maximumAfk}));
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nolimitspecified, {name: chat.un}));
+                limite var = msg.substring (cmd.length + 1);
+                if (! isNaN (limite)) {
+                  basicBot.settings.maximumAfk = parseInt (limite, 10);
+                  API.sendChat (subChat (basicBot.chat.maximumafktimeset, {name: chat.un, tempo: basicBot.settings.maximumAfk}));
                 }
-                else API.sendChat(subChat(pirataBot.chat.invalidlimitspecified, {name: chat.un}));
+                mais API.sendChat (subChat (basicBot.chat.invalidlimitspecified, {name: chat.un}));
               }
             }
           },
 
           afkremovalCommand: {
-            command: 'afkremoval',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.afkRemoval) {
-                  pirataBot.settings.afkRemoval = !pirataBot.settings.afkRemoval;
-                  clearInterval(pirataBot.room.afkInterval);
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.afkremoval}));
+            comando: 'afkremoval',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.afkRemoval) {
+                  basicBot.settings.afkRemoval = basicBot.settings.afkRemoval!;
+                  clearInterval (basicBot.room.afkInterval);
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.afkremoval}));
                 }
-                else {
-                  pirataBot.settings.afkRemoval = !pirataBot.settings.afkRemoval;
-                  pirataBot.room.afkInterval = setInterval(function () {
-                    pirataBot.roomUtilities.afkCheck()
+                outro {
+                  basicBot.settings.afkRemoval = basicBot.settings.afkRemoval!;
+                  basicBot.room.afkInterval = setInterval (function () {
+                    basicBot.roomUtilities.afkCheck ()
                   }, 2 * 1000);
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.afkremoval}));
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.afkremoval}));
                 }
               }
             }
           },
 
           afkresetCommand: {
-            command: 'afkreset',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'afkreset',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substring(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                pirataBot.userUtilities.setLastActivity(user);
-                API.sendChat(subChat(pirataBot.chat.afkstatusreset, {name: chat.un, username: name}));
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substring (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                basicBot.userUtilities.setLastActivity (usuário);
+                API.sendChat (subChat (basicBot.chat.afkstatusreset, {name: chat.un, nome de usuário: nome}));
               }
             }
           },
 
           afktimeCommand: {
-            command: 'afktime',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'afktime',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substring(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                var lastActive = pirataBot.userUtilities.getLastActivity(user);
-                var inactivity = Date.now() - lastActive;
-                var time = pirataBot.roomUtilities.msToStr(inactivity);
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substring (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                var lastActive = basicBot.userUtilities.getLastActivity (usuário);
+                var inatividade = Date.now () - lastActive;
+                var tempo = basicBot.roomUtilities.msToStr (inatividade);
 
-                var launchT = pirataBot.room.roomstats.launchTime;
-                var durationOnline = Date.now() - launchT;
+                var launchT = basicBot.room.roomstats.launchTime;
+                var durationOnline = Date.now () - launchT;
 
-                if (inactivity == durationOnline){
-                  API.sendChat(subChat(pirataBot.chat.inactivelonger, {botname: pirataBot.settings.botName, name: chat.un, username: name}));
-                } else {
-                  API.sendChat(subChat(pirataBot.chat.inactivefor, {name: chat.un, username: name, time: time}));
+                if (inatividade == durationOnline) {
+                  API.sendChat (subChat (basicBot.chat.inactivelonger, {botname: basicBot.settings.botName, name: chat.un, nome de usuário: nome}));
+                } Outro {
+                  API.sendChat (subChat (basicBot.chat.inactivefor, {name: chat.un, nome de usuário: nome, tempo: time}));
                 }
               }
             }
           },
 
           autodisableCommand: {
-            command: 'autodisable',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.autodisable) {
-                  pirataBot.settings.autodisable = !pirataBot.settings.autodisable;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.autodisable}));
+            comando: 'autodisable',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.autodisable) {
+                  basicBot.settings.autodisable = basicBot.settings.autodisable!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.autodisable}));
                 }
-                else {
-                  pirataBot.settings.autodisable = !pirataBot.settings.autodisable;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.autodisable}));
+                outro {
+                  basicBot.settings.autodisable = basicBot.settings.autodisable!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.autodisable}));
                 }
 
               }
@@ -1660,122 +1660,122 @@
           },
 
           autoskipCommand: {
-            command: 'autoskip',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.autoskip) {
-                  pirataBot.settings.autoskip = !pirataBot.settings.autoskip;
-                  clearTimeout(pirataBot.room.autoskipTimer);
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.autoskip}));
+            comando: 'AUTOSKIP',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.autoskip) {
+                  basicBot.settings.autoskip = basicBot.settings.autoskip!;
+                  clearTimeout (basicBot.room.autoskipTimer);
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.autoskip}));
                 }
-                else {
-                  pirataBot.settings.autoskip = !pirataBot.settings.autoskip;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.autoskip}));
+                outro {
+                  basicBot.settings.autoskip = basicBot.settings.autoskip!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.autoskip}));
                 }
               }
             }
           },
 
           autowootCommand: {
-            command: 'autowoot',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(pirataBot.chat.autowoot);
+            comando: 'autowoot',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (basicBot.chat.autowoot);
               }
             }
           },
 
           baCommand: {
-            command: 'ba',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(pirataBot.chat.brandambassador);
+            comando: 'ba',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (basicBot.chat.brandambassador);
               }
             }
           },
 
           ballCommand: {
-            command: ['8ball', 'ask'],
-            rank: 'user',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var crowd = API.getUsers();
+            comando: ['8ball', 'pedir'],
+            classificação: 'usuário',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var multidão API.getUsers = ();
                 var msg = chat.message;
-                var argument = msg.substring(cmd.length + 1).replace(/@/g, '');
-                var randomUser = Math.floor(Math.random() * crowd.length);
-                var randomBall = Math.floor(Math.random() * pirataBot.chat.balls.length);
-                var randomSentence = Math.floor(Math.random() * 1);
-                API.sendChat(subChat(pirataBot.chat.ball, {name: chat.un, botname: pirataBot.settings.botName, question: argument, response: pirataBot.chat.balls[randomBall]}));
+                argumento var = msg.substring (cmd.length + 1) .replace (/ @ / g, '');
+                var Randomuser = Math.floor (Math.random () * crowd.length);
+                var randomBall = Math.floor (Math.random () * basicBot.chat.balls.length);
+                var randomSentence = Math.floor (Math.random () * 1);
+                API.sendChat (subChat (basicBot.chat.ball, {name: chat.un, botname: basicBot.settings.botName, pergunta: argumento, a resposta: basicBot.chat.balls [randomBall]}));
               }
             }
           },
 
           banCommand: {
-            command: 'ban',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: "proibição",
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substr(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                API.moderateBanUser(user.id, 1, API.BAN.DAY);
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substr (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                API.moderateBanUser (user.id, 1, API.BAN.DAY);
               }
             }
           },
 
-          blacklistCommand: {
-            command: ['blacklist', 'bl'],
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+          {: blacklistCommand
+            comando: ['lista negra', 'bl'],
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nolistspecified, {name: chat.un}));
-                var list = msg.substr(cmd.length + 1);
-                if (typeof pirataBot.room.blacklists[list] === 'undefined') return API.sendChat(subChat(pirataBot.chat.invalidlistspecified, {name: chat.un}));
-                else {
-                  var media = API.getMedia();
-                  var timeLeft = API.getTimeRemaining();
-                  var timeElapsed = API.getTimeElapsed();
-                  var track = {
-                    list: list,
-                    author: media.author,
-                    title: media.title,
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nolistspecified, {name: chat.un}));
+                lista var = msg.substr (cmd.length + 1);
+                if (typeof basicBot.room.blacklists [lista] === 'indefinido') API.sendChat retorno (subChat (basicBot.chat.invalidlistspecified, {name: chat.un}));
+                outro {
+                  var media = API.getMedia ();
+                  var timeleft = API.getTimeRemaining ();
+                  var timeElapsed API.getTimeElapsed = ();
+                  var pista = {
+                    lista: lista,
+                    autor: media.author,
+                    Título: media.title,
                     mid: media.format + ':' + media.cid
                   };
-                  pirataBot.room.newBlacklisted.push(track);
-                  pirataBot.room.blacklists[list].push(media.format + ':' + media.cid);
-                  API.sendChat(subChat(pirataBot.chat.newblacklisted, {name: chat.un, blacklist: list, author: media.author, title: media.title, mid: media.format + ':' + media.cid}));
-                  if (pirataBot.settings.smartSkip && timeLeft > timeElapsed){
-                    pirataBot.roomUtilities.smartSkip();
+                  basicBot.room.newBlacklisted.push (pista);
+                  basicBot.room.blacklists [lista] .faça pressão sobre (media.format + ':' + media.cid);
+                  API.sendChat (subChat (basicBot.chat.newblacklisted, {name: chat.un, lista negra: lista, autor: media.author, título: media.title, mid: media.format + ':' + media.cid}) );
+                  if (basicBot.settings.smartSkip && timeleft> timeElapsed) {
+                    basicBot.roomUtilities.smartSkip ();
                   }
-                  else {
-                    API.moderateForceSkip();
+                  outro {
+                    API.moderateForceSkip ();
                   }
-                  if (typeof pirataBot.room.newBlacklistedSongFunction === 'function') {
-                    pirataBot.room.newBlacklistedSongFunction(track);
+                  if (typeof "função" basicBot.room.newBlacklistedSongFunction ===) {
+                    basicBot.room.newBlacklistedSongFunction (pista);
                   }
                 }
               }
@@ -1783,152 +1783,152 @@
           },
 
           blinfoCommand: {
-            command: 'blinfo',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var author = API.getMedia().author;
-                var title = API.getMedia().title;
+            comando: 'blinfo',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var author = API.getMedia () autor.;
+                . title = var API.getMedia () título;
                 var name = chat.un;
-                var format = API.getMedia().format;
-                var cid = API.getMedia().cid;
-                var songid = format + ":" + cid;
+                . formato var = API.getMedia () formato;
+                var cid = API.getMedia () cid.;
+                var MotoID = formato + ":" + cid;
 
-                API.sendChat(subChat(pirataBot.chat.blinfo, {name: name, author: author, title: title, songid: songid}));
+                API.sendChat (subChat (basicBot.chat.blinfo, {name: nome, do autor: autor, título: título, MotoID: MotoID}));
               }
             }
           },
 
           bouncerPlusCommand: {
-            command: 'bouncer+',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'bouncer +',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (pirataBot.settings.bouncerPlus) {
-                  pirataBot.settings.bouncerPlus = false;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': 'Bouncer+'}));
+                se (basicBot.settings.bouncerPlus) {
+                  basicBot.settings.bouncerPlus = false;
+                  retorno API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': 'Bouncer +'}));
                 }
-                else {
-                  if (!pirataBot.settings.bouncerPlus) {
-                    var id = chat.uid;
-                    var perm = pirataBot.userUtilities.getPermission(id);
-                    if (perm > 2) {
-                      pirataBot.settings.bouncerPlus = true;
-                      return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': 'Bouncer+'}));
+                outro {
+                  se (basicBot.settings.bouncerPlus!) {
+                    id = var chat.uid;
+                    var perm = basicBot.userUtilities.getPermission (id);
+                    se (perm 2>) {
+                      basicBot.settings.bouncerPlus = true;
+                      retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': 'Bouncer +'}));
                     }
                   }
-                  else return API.sendChat(subChat(pirataBot.chat.bouncerplusrank, {name: chat.un}));
+                  mais API.sendChat retorno (subChat (basicBot.chat.bouncerplusrank, {name: chat.un}));
                 }
               }
             }
           },
 
-          botnameCommand: {
-            command: 'botname',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+          {: botnameCommand
+            comando: 'botname',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length <= cmd.length + 1) return API.sendChat(subChat(pirataBot.chat.currentbotname, {botname: pirataBot.settings.botName}));
-                var argument = msg.substring(cmd.length + 1);
-                if (argument) {
-                  pirataBot.settings.botName = argument;
-                  API.sendChat(subChat(pirataBot.chat.botnameset, {botName: pirataBot.settings.botName}));
+                if (msg.length <= cmd.length + 1) retorno API.sendChat (subChat (basicBot.chat.currentbotname, {botname: basicBot.settings.botName}));
+                argumento var = msg.substring (cmd.length + 1);
+                if (argumento) {
+                  basicBot.settings.botName = argumento;
+                  API.sendChat (subChat (basicBot.chat.botnameset, {botname: basicBot.settings.botName}));
                 }
               }
             }
           },
 
           clearchatCommand: {
-            command: 'clearchat',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var currentchat = $('#chat-messages').children();
-                for (var i = 0; i < currentchat.length; i++) {
-                  API.moderateDeleteChat(currentchat[i].getAttribute("data-cid"));
+            comando: 'CLEARCHAT',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var currentchat = $ ('# chat-mensagens') crianças (.);
+                for (var i = 0; i <currentchat.length; i ++) {
+                  API.moderateDeleteChat (currentchat [i] .getAttribute ("data-cid"));
                 }
-                return API.sendChat(subChat(pirataBot.chat.chatcleared, {name: chat.un}));
+                retornar API.sendChat (subChat (basicBot.chat.chatcleared, {name: chat.un}));
               }
             }
           },
 
           commandsCommand: {
-            command: 'commands',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(subChat(pirataBot.chat.commandslink, {botname: pirataBot.settings.botName, link: pirataBot.cmdLink}));
+            comando: 'comandos',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (subChat (basicBot.chat.commandslink, {botname: basicBot.settings.botName, link: basicBot.cmdLink}));
               }
             }
           },
 
           cmddeletionCommand: {
-            command: ['commanddeletion', 'cmddeletion', 'cmddel'],
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.cmdDeletion) {
-                  pirataBot.settings.cmdDeletion = !pirataBot.settings.cmdDeletion;
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.cmddeletion}));
+            comando: ['commanddeletion', 'cmddeletion', 'cmddel'],
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.cmdDeletion) {
+                  basicBot.settings.cmdDeletion = basicBot.settings.cmdDeletion!;
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.cmddeletion}));
                 }
-                else {
-                  pirataBot.settings.cmdDeletion = !pirataBot.settings.cmdDeletion;
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.cmddeletion}));
+                outro {
+                  basicBot.settings.cmdDeletion = basicBot.settings.cmdDeletion!;
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.cmddeletion}));
                 }
               }
             }
           },
 
           cookieCommand: {
-            command: 'cookie',
-            rank: 'user',
-            type: 'startsWith',
-            getCookie: function (chat) {
-              var c = Math.floor(Math.random() * pirataBot.chat.cookies.length);
-              return pirataBot.chat.cookies[c];
+            comando: 'cookie',
+            classificação: 'usuário',
+            digite: 'startsWith',
+            GetCookie: function (chat) {
+              var c = Math.floor (Math.random () * basicBot.chat.cookies.length);
+              retornam basicBot.chat.cookies [C];
             },
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
 
-                var space = msg.indexOf(' ');
-                if (space === -1) {
-                  API.sendChat(pirataBot.chat.eatcookie);
+                espaço var = msg.indexOf ('');
+                se (espaço === -1) {
+                  API.sendChat (basicBot.chat.eatcookie);
                   return false;
                 }
-                else {
-                  var name = msg.substring(space + 2);
-                  var user = pirataBot.userUtilities.lookupUserName(name);
-                  if (user === false || !user.inRoom) {
-                    return API.sendChat(subChat(pirataBot.chat.nousercookie, {name: name}));
+                outro {
+                  var name = msg.substring (espaço + 2);
+                  usuário var = basicBot.userUtilities.lookupUserName (nome);
+                  if (usuário falso === ||! user.inRoom) {
+                    retornar API.sendChat (subChat (basicBot.chat.nousercookie, {name: name}));
                   }
                   else if (user.username === chat.un) {
-                    return API.sendChat(subChat(pirataBot.chat.selfcookie, {name: name}));
+                    retornar API.sendChat (subChat (basicBot.chat.selfcookie, {name: name}));
                   }
-                  else {
-                    return API.sendChat(subChat(pirataBot.chat.cookie, {nameto: user.username, namefrom: chat.un, cookie: this.getCookie()}));
+                  outro {
+                    retornar API.sendChat (subChat (basicBot.chat.cookie, {nameto: user.username, namefrom: chat.un, biscoito: this.getCookie ()}));
                   }
                 }
               }
@@ -1936,33 +1936,33 @@
           },
 
           cycleCommand: {
-            command: 'cycle',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                pirataBot.roomUtilities.changeDJCycle();
+            comando: 'ciclo',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                basicBot.roomUtilities.changeDJCycle ();
               }
             }
           },
 
           cycleguardCommand: {
-            command: 'cycleguard',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.cycleGuard) {
-                  pirataBot.settings.cycleGuard = !pirataBot.settings.cycleGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.cycleguard}));
+            comando: 'CycleGuard',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.cycleGuard) {
+                  basicBot.settings.cycleGuard = basicBot.settings.cycleGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.cycleguard}));
                 }
-                else {
-                  pirataBot.settings.cycleGuard = !pirataBot.settings.cycleGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.cycleguard}));
+                outro {
+                  basicBot.settings.cycleGuard = basicBot.settings.cycleGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.cycleguard}));
                 }
 
               }
@@ -1970,218 +1970,218 @@
           },
 
           cycletimerCommand: {
-            command: 'cycletimer',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'cycletimer',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var cycleTime = msg.substring(cmd.length + 1);
-                if (!isNaN(cycleTime) && cycleTime !== "") {
-                  pirataBot.settings.maximumCycletime = cycleTime;
-                  return API.sendChat(subChat(pirataBot.chat.cycleguardtime, {name: chat.un, time: pirataBot.settings.maximumCycletime}));
+                var CycleTime = msg.substring (cmd.length + 1);
+                if (! isNaN (CycleTime) && CycleTime! == "") {
+                  basicBot.settings.maximumCycletime = CycleTime;
+                  retornar API.sendChat (subChat (basicBot.chat.cycleguardtime, {name: chat.un, tempo: basicBot.settings.maximumCycletime}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.invalidtime, {name: chat.un}));
 
               }
             }
           },
 
           dclookupCommand: {
-            command: ['dclookup', 'dc'],
-            rank: 'user',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: ['dclookup', 'dc'],
+            classificação: 'usuário',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var name;
+                var nome;
                 if (msg.length === cmd.length) name = chat.un;
-                else {
-                  name = msg.substring(cmd.length + 2);
-                  var perm = pirataBot.userUtilities.getPermission(chat.uid);
-                  if (perm < 2) return API.sendChat(subChat(pirataBot.chat.dclookuprank, {name: chat.un}));
+                outro {
+                  name = msg.substring (cmd.length + 2);
+                  var perm = basicBot.userUtilities.getPermission (chat.uid);
+                  if (perm <2) API.sendChat retorno (subChat (basicBot.chat.dclookuprank, {name: chat.un}));
                 }
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                var toChat = pirataBot.userUtilities.dclookup(user.id);
-                API.sendChat(toChat);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                var toChat = basicBot.userUtilities.dclookup (user.id);
+                API.sendChat (toChat);
               }
             }
           },
 
-          /*deletechatCommand: {
-          command: 'deletechat',
-          rank: 'mod',
-          type: 'startsWith',
-          functionality: function (chat, cmd) {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-          if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-          else {
+          / * DeletechatCommand: {
+          comando: 'deletechat',
+          classificação: 'mod',
+          digite: 'startsWith',
+          funcionalidade: function (bate-papo, cmd) {
+          if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+          (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+          outro {
           var msg = chat.message;
-          if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-          var name = msg.substring(cmd.length + 2);
-          var user = pirataBot.userUtilities.lookupUserName(name);
-          if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-          var chats = $('.from');
-          var message = $('.message');
-          var emote = $('.emote');
-          var from = $('.un.clickable');
-          for (var i = 0; i < chats.length; i++) {
-          var n = from[i].textContent;
-          if (name.trim() === n.trim()) {
+          if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+          var name = msg.substring (cmd.length + 2);
+          usuário var = basicBot.userUtilities.lookupUserName (nome);
+          if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+          var chats = $ ('a partir.');
+          mensagem var = $ ('. mensagem');
+          var emote = $ ('emocionar.');
+          var from = $ ('un.clickable.');
+          for (var i = 0; i <chats.length; i ++) {
+          n = var a partir de [i] .textContent;
+          se (name.trim () === n.trim ()) {
 
-          // var messagecid = $(message)[i].getAttribute('data-cid');
-          // var emotecid = $(emote)[i].getAttribute('data-cid');
-          // API.moderateDeleteChat(messagecid);
+          // Var messagecid = $ (mensagem) [i] .getAttribute ('data-cid');
+          // Var emotecid = $ (emote) [i] .getAttribute ('data-cid');
+          // API.moderateDeleteChat (messagecid);
 
-          // try {
-          //     API.moderateDeleteChat(messagecid);
-          // }
-          // finally {
-          //     API.moderateDeleteChat(emotecid);
-          // }
+          // Tentar {
+          // API.moderateDeleteChat (messagecid);
+          //}
+          // Finalmente {
+          // API.moderateDeleteChat (emotecid);
+          //}
 
-          if (typeof $(message)[i].getAttribute('data-cid') == "undefined"){
-          API.moderateDeleteChat($(emote)[i].getAttribute('data-cid')); // works well with normal messages but not with emotes due to emotes and messages are seperate.
-          } else {
-          API.moderateDeleteChat($(message)[i].getAttribute('data-cid'));
+          if (typeof $ (mensagem) [i] .getAttribute ('data-cid ") ==" undefined ") {
+          API.moderateDeleteChat ($ (emote) [i] .getAttribute ('data-cid')); // Funciona bem com mensagens normais, mas não com emotes devido a emotes e mensagens são separados.
+          } Outro {
+          API.moderateDeleteChat ($ (mensagem) [i] .getAttribute ('data-cid'));
           }
           }
           }
-          API.sendChat(subChat(pirataBot.chat.deletechat, {name: chat.un, username: name}));
+          API.sendChat (subChat (basicBot.chat.deletechat, {name: chat.un, nome de usuário: nome}));
           }
           }
-          },*/
+          }, * /
 
           emojiCommand: {
-            command: 'emoji',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var link = 'http://www.emoji-cheat-sheet.com/';
-                API.sendChat(subChat(pirataBot.chat.emojilist, {link: link}));
+            comando: "emoji",
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                ligação var = 'http://www.emoji-cheat-sheet.com/';
+                API.sendChat (subChat (basicBot.chat.emojilist, {link: link}));
               }
             }
           },
 
           englishCommand: {
-            command: 'english',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if(chat.message.length === cmd.length) return API.sendChat('/me No user specified.');
-                var name = chat.message.substring(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if(typeof user === 'boolean') return API.sendChat('/me Invalid user specified.');
-                var lang = pirataBot.userUtilities.getUser(user).language;
-                var ch = '/me @' + name + ' ';
-                switch(lang){
-                  case 'en': break;
-                  case 'da': ch += 'Vær venlig at tale engelsk.'; break;
-                  case 'de': ch += 'Bitte sprechen Sie Englisch.'; break;
-                  case 'es': ch += 'Por favor, hable Inglés.'; break;
-                  case 'fr': ch += 'Parlez anglais, s\'il vous plaît.'; break;
-                  case 'nl': ch += 'Spreek Engels, alstublieft.'; break;
-                  case 'pl': ch += 'Proszę mówić po angielsku.'; break;
-                  case 'pt': ch += 'Por favor, fale Inglês.'; break;
-                  case 'sk': ch += 'Hovorte po anglicky, prosím.'; break;
-                  case 'cs': ch += 'Mluvte prosím anglicky.'; break;
-                  case 'sr': ch += 'Молим Вас, говорите енглески.'; break;
+            comando: 'Inglês',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (chat.message.length === cmd.length) return API.sendChat ('/ me Nenhum usuário especificado.');
+                var name = chat.message.substring (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') return API.sendChat ('/ me usuário inválido especificado.');
+                var lang = basicBot.userUtilities.getUser (usuário) .language;
+                var ch = '/ me @' + nome + '';
+                switch (lang) {
+                  caso 'en': break;
+                  caso 'da': ch + = 'Vær venlig no conto engelsk.'; parar;
+                  caso 'de': ch + = "Bitte sprechen Sie Englisch. '; parar;
+                  caso «ES»: ch + = '. Por favor, hable Inglés'; parar;
+                  caso 'fr': ch + = "Parlez anglais, s \ 'il vous plaît.'; parar;
+                  caso 'nl': ch + = 'Spreek Engels, alstublieft.'; parar;
+                  caso 'pl': ch + = 'prosze mówić po angielsku.'; parar;
+                  caso 'pt': ch + =; 'Por favor, fale Inglês.' parar;
+                  caso 'sk': ch + = 'Hovorte po anglicky, prosím.'; parar;
+                  caso 'cs': ch + = 'Mluvte prosím anglicky.'; parar;
+                  caso 'sr': ch + = 'Молим Вас, говорите енглески.'; parar;
                 }
-                ch += ' English please.';
-                API.sendChat(ch);
+                ch + = 'Inglês, por favor.';
+                API.sendChat (ch);
               }
             }
           },
 
           etaCommand: {
-            command: 'eta',
-            rank: 'user',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var perm = pirataBot.userUtilities.getPermission(chat.uid);
+            comando: 'eta',
+            classificação: 'usuário',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var perm = basicBot.userUtilities.getPermission (chat.uid);
                 var msg = chat.message;
-                var dj = API.getDJ().username;
-                var name;
-                if (msg.length > cmd.length) {
-                  if (perm < 2) return void (0);
-                  name = msg.substring(cmd.length + 2);
-                } else name = chat.un;
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                var pos = API.getWaitListPosition(user.id);
-                var realpos = pos + 1;
-                if (name == dj) return API.sendChat(subChat(pirataBot.chat.youaredj, {name: name}));
-                if (pos < 0) return API.sendChat(subChat(pirataBot.chat.notinwaitlist, {name: name}));
-                if (pos == 0) return API.sendChat(subChat(pirataBot.chat.youarenext, {name: name}));
-                var timeRemaining = API.getTimeRemaining();
-                var estimateMS = ((pos + 1) * 4 * 60 + timeRemaining) * 1000;
-                var estimateString = pirataBot.roomUtilities.msToStr(estimateMS);
-                API.sendChat(subChat(pirataBot.chat.eta, {name: name, time: estimateString, position: realpos}));
+                var dj = API.getDJ () username.;
+                var nome;
+                se (msg.length> cmd.length) {
+                  if (perm <2) vazio retorno (0);
+                  name = msg.substring (cmd.length + 2);
+                } Else name = chat.un;
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                var pos = API.getWaitListPosition (user.id);
+                var RealPOS = pos + 1;
+                if (nome == dj) API.sendChat retorno (subChat (basicBot.chat.youaredj, {name: name}));
+                if (pos <0) return API.sendChat (subChat (basicBot.chat.notinwaitlist, {name: name}));
+                if (pos == 0) API.sendChat retorno (subChat (basicBot.chat.youarenext, {name: name}));
+                var timeRemaining API.getTimeRemaining = ();
+                estimateMS var = ((pos + 1) * 4 * 60 + timeRemaining) * 1000;
+                var estimateString = basicBot.roomUtilities.msToStr (estimateMS);
+                API.sendChat (subChat (basicBot.chat.eta, {name: nome, tempo: estimateString, posição: RealPOS}));
               }
             }
           },
 
           fbCommand: {
-            command: 'fb',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.fbLink === "string")
-                API.sendChat(subChat(pirataBot.chat.facebook, {link: pirataBot.settings.fbLink}));
+            comando: FB ',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.fbLink === "string")
+                API.sendChat (subChat (basicBot.chat.facebook, {link: basicBot.settings.fbLink}));
               }
             }
           },
 
           filterCommand: {
-            command: 'filter',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.filterChat) {
-                  pirataBot.settings.filterChat = !pirataBot.settings.filterChat;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.chatfilter}));
+            comando: 'filtro',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.filterChat) {
+                  ! basicBot.settings.filterChat = basicBot.settings.filterChat;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.chatfilter}));
                 }
-                else {
-                  pirataBot.settings.filterChat = !pirataBot.settings.filterChat;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.chatfilter}));
+                outro {
+                  ! basicBot.settings.filterChat = basicBot.settings.filterChat;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.chatfilter}));
                 }
               }
             }
           },
 
           forceskipCommand: {
-            command: ['forceskip', 'fs'],
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(subChat(pirataBot.chat.forceskip, {name: chat.un}));
-                API.moderateForceSkip();
-                pirataBot.room.skippable = false;
-                setTimeout(function () {
-                  pirataBot.room.skippable = true
+            comando: ['forceskip', 'fs'],
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (subChat (basicBot.chat.forceskip, {name: chat.un}));
+                API.moderateForceSkip ();
+                basicBot.room.skippable = false;
+                setTimeout (function () {
+                  basicBot.room.skippable = true
                 }, 5 * 1000);
 
               }
@@ -2189,90 +2189,90 @@
           },
 
           ghostbusterCommand: {
-            command: 'ghostbuster',
-            rank: 'user',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'ghostbuster',
+            classificação: 'usuário',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var name;
+                var nome;
                 if (msg.length === cmd.length) name = chat.un;
-                else {
-                  name = msg.substr(cmd.length + 2);
+                outro {
+                  name = msg.substr (cmd.length + 2);
                 }
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (user === false || !user.inRoom) {
-                  return API.sendChat(subChat(pirataBot.chat.ghosting, {name1: chat.un, name2: name}));
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (usuário falso === ||! user.inRoom) {
+                  retornar API.sendChat (subChat (basicBot.chat.ghosting, {nome1: chat.un, name2: name}));
                 }
-                else API.sendChat(subChat(pirataBot.chat.notghosting, {name1: chat.un, name2: name}));
+                mais API.sendChat (subChat (basicBot.chat.notghosting, {nome1: chat.un, name2: name}));
               }
             }
           },
 
           gifCommand: {
-            command: ['gif', 'giphy'],
-            rank: 'user',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: ['gif', 'giphy'],
+            classificação: 'usuário',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length !== cmd.length) {
-                  function get_id(api_key, fixedtag, func)
+                se (msg.length! == cmd.length) {
+                  função get_id (api_key, fixedtag, func)
                   {
-                    $.getJSON(
-                      "https://tv.giphy.com/v1/gifs/random?",
+                    $ .getJSON (
+                      "Https://tv.giphy.com/v1/gifs/random?",
                       {
-                        "format": "json",
-                        "api_key": api_key,
-                        "rating": rating,
-                        "tag": fixedtag
+                        "Formatar": "json",
+                        "Api_key": api_key,
+                        "Rating": classificação,
+                        "Tag": fixedtag
                       },
-                      function(response)
+                      function (response)
                       {
-                        func(response.data.id);
+                        func (response.data.id);
                       }
                     )
                   }
-                  var api_key = "dc6zaTOxFJmzC"; // public beta key
-                  var rating = "pg-13"; // PG 13 gifs
-                  var tag = msg.substr(cmd.length + 1);
-                  var fixedtag = tag.replace(/ /g,"+");
-                  var commatag = tag.replace(/ /g,", ");
-                  get_id(api_key, tag, function(id) {
-                    if (typeof id !== 'undefined') {
-                      API.sendChat(subChat(pirataBot.chat.validgiftags, {name: chat.un, id: id, tags: commatag}));
-                    } else {
-                      API.sendChat(subChat(pirataBot.chat.invalidgiftags, {name: chat.un, tags: commatag}));
+                  var api_key = "dc6zaTOxFJmzC"; // Chave beta público
+                  Classificação var = "PG-13"; // PG 13 gifs
+                  tag var = msg.substr (cmd.length + 1);
+                  var fixedtag = tag.replace (/ / g, "+");
+                  var commatag = tag.replace (/ / g, ",");
+                  get_id (api_key, tag, função (id) {
+                    if (typeof id! == 'indefinido') {
+                      API.sendChat (subChat (basicBot.chat.validgiftags, {name: chat.un, id: id, tags: commatag}));
+                    } Outro {
+                      API.sendChat (subChat (basicBot.chat.invalidgiftags, {name: chat.un, tags: commatag}));
                     }
                   });
                 }
-                else {
-                  function get_random_id(api_key, func)
+                outro {
+                  função get_random_id (api_key, func)
                   {
-                    $.getJSON(
-                      "https://tv.giphy.com/v1/gifs/random?",
+                    $ .getJSON (
+                      "Https://tv.giphy.com/v1/gifs/random?",
                       {
-                        "format": "json",
-                        "api_key": api_key,
-                        "rating": rating
+                        "Formatar": "json",
+                        "Api_key": api_key,
+                        "Rating": classificação
                       },
-                      function(response)
+                      function (response)
                       {
-                        func(response.data.id);
+                        func (response.data.id);
                       }
                     )
                   }
-                  var api_key = "dc6zaTOxFJmzC"; // public beta key
-                  var rating = "pg-13"; // PG 13 gifs
-                  get_random_id(api_key, function(id) {
-                    if (typeof id !== 'undefined') {
-                      API.sendChat(subChat(pirataBot.chat.validgifrandom, {name: chat.un, id: id}));
-                    } else {
-                      API.sendChat(subChat(pirataBot.chat.invalidgifrandom, {name: chat.un}));
+                  var api_key = "dc6zaTOxFJmzC"; // Chave beta público
+                  Classificação var = "PG-13"; // PG 13 gifs
+                  get_random_id (api_key, função (id) {
+                    if (typeof id! == 'indefinido') {
+                      API.sendChat (subChat (basicBot.chat.validgifrandom, {name: chat.un, id: id}));
+                    } Outro {
+                      API.sendChat (subChat (basicBot.chat.invalidgifrandom, {name: chat.un}));
                     }
                   });
                 }
@@ -2280,163 +2280,163 @@
             }
           },
 
-          helpCommand: {
-            command: 'help',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var link = "(Updated link coming soon)";
-                API.sendChat(subChat(pirataBot.chat.starterhelp, {link: link}));
+          HelpCommand: {
+            comando: 'ajuda',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                ligação var = "(link Atualizado em breve)";
+                API.sendChat (subChat (basicBot.chat.starterhelp, {link: link}));
               }
             }
           },
 
-          historyskipCommand: {
-            command: 'historyskip',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.historySkip) {
-                  pirataBot.settings.historySkip = !pirataBot.settings.historySkip;
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.historyskip}));
+          Hist oryskipCommand: {
+            comando: 'historyskip',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.historySkip) {
+                  basicBot.settings.historySkip = basicBot.settings.historySkip!;
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.historyskip}));
                 }
-                else {
-                  pirataBot.settings.historySkip = !pirataBot.settings.historySkip;
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.historyskip}));
+                outro {
+                  basicBot.settings.historySkip = basicBot.settings.historySkip!;
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.historyskip}));
                 }
               }
             }
           },
 
           joinCommand: {
-            command: 'join',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.room.roulette.rouletteStatus && pirataBot.room.roulette.participants.indexOf(chat.uid) < 0) {
-                  pirataBot.room.roulette.participants.push(chat.uid);
-                  API.sendChat(subChat(pirataBot.chat.roulettejoin, {name: chat.un}));
+            comando: 'juntar',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (basicBot.room.roulette.rouletteStatus && basicBot.room.roulette.participants.indexOf (chat.uid) <0) {
+                  basicBot.room.roulette.participants.push (chat.uid);
+                  API.sendChat (subChat (basicBot.chat.roulettejoin, {name: chat.un}));
                 }
               }
             }
           },
 
           jointimeCommand: {
-            command: 'jointime',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'jointime',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substring(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                var join = pirataBot.userUtilities.getJointime(user);
-                var time = Date.now() - join;
-                var timeString = pirataBot.roomUtilities.msToStr(time);
-                API.sendChat(subChat(pirataBot.chat.jointime, {namefrom: chat.un, username: name, time: timeString}));
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substring (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                var join = basicBot.userUtilities.getJointime (usuário);
+                var tempo = Date.now () - participar;
+                var TimeString = basicBot.roomUtilities.msToStr (tempo);
+                API.sendChat (subChat (basicBot.chat.jointime, {namefrom: chat.un, nome de usuário: nome, tempo: TimeString}));
               }
             }
           },
 
           kickCommand: {
-            command: 'kick',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'chute',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var lastSpace = msg.lastIndexOf(' ');
-                var time;
-                var name;
-                if (lastSpace === msg.indexOf(' ')) {
-                  time = 0.25;
-                  name = msg.substring(cmd.length + 2);
+                var lastSpace msg.lastIndexOf = ('');
+                var tempo;
+                var nome;
+                se (lastSpace === msg.indexOf ('')) {
+                  tempo = 0,25;
+                  name = msg.substring (cmd.length + 2);
                 }
-                else {
-                  time = msg.substring(lastSpace + 1);
-                  name = msg.substring(cmd.length + 2, lastSpace);
+                outro {
+                  tempo = msg.substring (lastSpace + 1);
+                  name = msg.substring (cmd.length + 2, lastSpace);
                 }
 
-                var user = pirataBot.userUtilities.lookupUserName(name);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
                 var from = chat.un;
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
 
-                var permFrom = pirataBot.userUtilities.getPermission(chat.uid);
-                var permTokick = pirataBot.userUtilities.getPermission(user.id);
+                var permFrom = basicBot.userUtilities.getPermission (chat.uid);
+                var permTokick = basicBot.userUtilities.getPermission (user.id);
 
                 if (permFrom <= permTokick)
-                return API.sendChat(subChat(pirataBot.chat.kickrank, {name: chat.un}));
+                retornar API.sendChat (subChat (basicBot.chat.kickrank, {name: chat.un}));
 
-                if (!isNaN(time)) {
-                  API.sendChat(subChat(pirataBot.chat.kick, {name: chat.un, username: name, time: time}));
-                  if (time > 24 * 60 * 60) API.moderateBanUser(user.id, 1, API.BAN.PERMA);
-                  else API.moderateBanUser(user.id, 1, API.BAN.DAY);
-                  setTimeout(function (id, name) {
-                    API.moderateUnbanUser(id);
-                    console.log('Unbanned @' + name + '. (' + id + ')');
-                  }, time * 60 * 1000, user.id, name);
+                if (! isNaN (tempo)) {
+                  API.sendChat (subChat (basicBot.chat.kick, {name: chat.un, nome de usuário: nome, tempo: time}));
+                  if (hora> 24 * 60 * 60) API.moderateBanUser (user.id, 1, API.BAN.PERMA);
+                  mais API.moderateBanUser (user.id, 1, API.BAN.DAY);
+                  setTimeout (function (id, nome) {
+                    API.moderateUnbanUser (id);
+                    console.log ('. (' 'Unbanned @' + nome + + ID + ')');
+                  }, O tempo * 60 * 1000, user.id, nome);
                 }
-                else API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                mais API.sendChat (subChat (basicBot.chat.invalidtime, {name: chat.un}));
               }
             }
           },
 
           killCommand: {
-            command: 'kill',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                storeToStorage();
-                sendToSocket();
-                API.sendChat(pirataBot.chat.kill);
-                pirataBot.disconnectAPI();
-                setTimeout(function () {
-                  kill();
+            comando: 'matar',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                storeToStorage ();
+                sendToSocket ();
+                API.sendChat (basicBot.chat.kill);
+                basicBot.disconnectAPI ();
+                setTimeout (function () {
+                  matar ();
                 }, 1000);
               }
             }
           },
 
           languageCommand: {
-            command: 'language',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'linguagem',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length <= cmd.length + 1) return API.sendChat(subChat(pirataBot.chat.currentlang, {language: pirataBot.settings.language}));
-                var argument = msg.substring(cmd.length + 1);
+                if (msg.length <= cmd.length + 1) retorno API.sendChat (subChat (basicBot.chat.currentlang, {language: basicBot.settings.language}));
+                argumento var = msg.substring (cmd.length + 1);
 
-                $.get("https://rawgit.com/Yemasthui/pirataBot/master/lang/langIndex.json", function (json) {
+                $ .get ("https://rawgit.com/Yemasthui/basicBot/master/lang/pt-BR.json", function (JSON) {
                   var langIndex = json;
-                  var link = langIndex[argument.toLowerCase()];
-                  if (typeof link === "undefined") {
-                    API.sendChat(subChat(pirataBot.chat.langerror, {link: "http://git.io/vJ9nI"}));
+                  ligação var = langIndex [argument.toLowerCase ()];
+                  if (typeof ligação === "undefined") {
+                    API.sendChat (subChat (basicBot.chat.langerror, {link: "http://git.io/vJ9nI"}));
                   }
-                  else {
-                    pirataBot.settings.language = argument;
-                    loadChat();
-                    API.sendChat(subChat(pirataBot.chat.langset, {language: pirataBot.settings.language}));
+                  outro {
+                    basicBot.settings.language = argumento;
+                    loadChat ();
+                    API.sendChat (subChat (basicBot.chat.langset, {language: basicBot.settings.language}));
                   }
                 });
               }
@@ -2444,45 +2444,45 @@
           },
 
           leaveCommand: {
-            command: 'leave',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var ind = pirataBot.room.roulette.participants.indexOf(chat.uid);
-                if (ind > -1) {
-                  pirataBot.room.roulette.participants.splice(ind, 1);
-                  API.sendChat(subChat(pirataBot.chat.rouletteleave, {name: chat.un}));
+            comando: 'sair',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var ind = basicBot.room.roulette.participants.indexOf (chat.uid);
+                se (ind> -1) {
+                  basicBot.room.roulette.participants.splice (IND, 1);
+                  API.sendChat (subChat (basicBot.chat.rouletteleave, {name: chat.un}));
                 }
               }
             }
           },
 
           linkCommand: {
-            command: 'link',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var media = API.getMedia();
+            comando: 'link',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var media = API.getMedia ();
                 var from = chat.un;
-                var user = pirataBot.userUtilities.lookupUser(chat.uid);
-                var perm = pirataBot.userUtilities.getPermission(chat.uid);
-                var dj = API.getDJ().id;
+                usuário var = basicBot.userUtilities.lookupUser (chat.uid);
+                var perm = basicBot.userUtilities.getPermission (chat.uid);
+                var dj = API.getDJ () id.;
                 var isDj = false;
                 if (dj === chat.uid) isDj = true;
-                if (perm >= 1 || isDj) {
-                  if (media.format === 1) {
+                if (perm> = 1 || isDj) {
+                  se (media.format === 1) {
                     var linkToSong = "http://youtu.be/" + media.cid;
-                    API.sendChat(subChat(pirataBot.chat.songlink, {name: from, link: linkToSong}));
+                    API.sendChat (subChat (basicBot.chat.songlink, {name: de, link: linkToSong}));
                   }
-                  if (media.format === 2) {
-                    SC.get('/tracks/' + media.cid, function (sound) {
-                      API.sendChat(subChat(pirataBot.chat.songlink, {name: from, link: sound.permalink_url}));
+                  se (media.format === 2) {
+                    SC.get ('/ faixas /' + media.cid, função (som) {
+                      API.sendChat (subChat (basicBot.chat.songlink, {name: de, link: sound.permalink_url}));
                     });
                   }
                 }
@@ -2491,119 +2491,119 @@
           },
 
           lockCommand: {
-            command: 'lock',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                pirataBot.roomUtilities.booth.lockBooth();
+            comando: 'bloquear',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                basicBot.roomUtilities.booth.lockBooth ();
               }
             }
           },
 
           lockdownCommand: {
-            command: 'lockdown',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var temp = pirataBot.settings.lockdownEnabled;
-                pirataBot.settings.lockdownEnabled = !temp;
-                if (pirataBot.settings.lockdownEnabled) {
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.lockdown}));
+            comando: 'bloqueio',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var temp = basicBot.settings.lockdownEnabled;
+                ! basicBot.settings.lockdownEnabled = temperatura;
+                se (basicBot.settings.lockdownEnabled) {
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.lockdown}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.lockdown}));
+                mais API.sendChat retorno (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.lockdown}));
               }
             }
           },
 
           lockguardCommand: {
-            command: 'lockguard',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.lockGuard) {
-                  pirataBot.settings.lockGuard = !pirataBot.settings.lockGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.lockguard}));
+            comando: 'LockGuard',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.lockGuard) {
+                  basicBot.settings.lockGuard = basicBot.settings.lockGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.lockguard}));
                 }
-                else {
-                  pirataBot.settings.lockGuard = !pirataBot.settings.lockGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.lockguard}));
+                outro {
+                  basicBot.settings.lockGuard = basicBot.settings.lockGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.lockguard}));
                 }
               }
             }
           },
 
           lockskipCommand: {
-            command: 'lockskip',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.room.skippable) {
-                  var dj = API.getDJ();
-                  var id = dj.id;
+            comando: 'lockskip',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.room.skippable) {
+                  var dj = API.getDJ ();
+                  id = var dj.id;
                   var name = dj.username;
-                  var msgSend = '@' + name + ': ';
-                  pirataBot.room.queueable = false;
+                  var msgSend = '@' + nome + ':';
+                  basicBot.room.queueable = false;
 
-                  if (chat.message.length === cmd.length) {
-                    API.sendChat(subChat(pirataBot.chat.usedlockskip, {name: chat.un}));
-                    pirataBot.roomUtilities.booth.lockBooth();
-                    setTimeout(function (id) {
-                      API.moderateForceSkip();
-                      pirataBot.room.skippable = false;
-                      setTimeout(function () {
-                        pirataBot.room.skippable = true
+                  se (chat.message.length === cmd.length) {
+                    API.sendChat (subChat (basicBot.chat.usedlockskip, {name: chat.un}));
+                    basicBot.roomUtilities.booth.lockBooth ();
+                    setTimeout (function (id) {
+                      API.moderateForceSkip ();
+                      basicBot.room.skippable = false;
+                      setTimeout (function () {
+                        basicBot.room.skippable = true
                       }, 5 * 1000);
-                      setTimeout(function (id) {
-                        pirataBot.userUtilities.moveUser(id, pirataBot.settings.lockskipPosition, false);
-                        pirataBot.room.queueable = true;
-                        setTimeout(function () {
-                          pirataBot.roomUtilities.booth.unlockBooth();
+                      setTimeout (function (id) {
+                        basicBot.userUtilities.moveUser (id, basicBot.settings.lockskipPosition, false);
+                        basicBot.room.queueable = true;
+                        setTimeout (function () {
+                          basicBot.roomUtilities.booth.unlockBooth ();
                         }, 1000);
                       }, 1500, id);
                     }, 1000, id);
-                    return void (0);
+                    retorno void (0);
                   }
                   var validReason = false;
                   var msg = chat.message;
-                  var reason = msg.substring(cmd.length + 1);
-                  for (var i = 0; i < pirataBot.settings.lockskipReasons.length; i++) {
-                    var r = pirataBot.settings.lockskipReasons[i][0];
-                    if (reason.indexOf(r) !== -1) {
+                  var razão = msg.substring (cmd.length + 1);
+                  for (var i = 0; i <basicBot.settings.lockskipReasons.length; i ++) {
+                    var r = basicBot.settings.lockskipReasons [i] [0];
+                    se (reason.indexOf (R)! == -1) {
                       validReason = true;
-                      msgSend += pirataBot.settings.lockskipReasons[i][1];
+                      msgSend + = basicBot.settings.lockskipReasons [i] [1];
                     }
                   }
-                  if (validReason) {
-                    API.sendChat(subChat(pirataBot.chat.usedlockskip, {name: chat.un}));
-                    pirataBot.roomUtilities.booth.lockBooth();
-                    setTimeout(function (id) {
-                      API.moderateForceSkip();
-                      pirataBot.room.skippable = false;
-                      API.sendChat(msgSend);
-                      setTimeout(function () {
-                        pirataBot.room.skippable = true
+                  se (validReason) {
+                    API.sendChat (subChat (basicBot.chat.usedlockskip, {name: chat.un}));
+                    basicBot.roomUtilities.booth.lockBooth ();
+                    setTimeout (function (id) {
+                      API.moderateForceSkip ();
+                      basicBot.room.skippable = false;
+                      API.sendChat (msgSend);
+                      setTimeout (function () {
+                        basicBot.room.skippable = true
                       }, 5 * 1000);
-                      setTimeout(function (id) {
-                        pirataBot.userUtilities.moveUser(id, pirataBot.settings.lockskipPosition, false);
-                        pirataBot.room.queueable = true;
-                        setTimeout(function () {
-                          pirataBot.roomUtilities.booth.unlockBooth();
+                      setTimeout (function (id) {
+                        basicBot.userUtilities.moveUser (id, basicBot.settings.lockskipPosition, false);
+                        basicBot.room.queueable = true;
+                        setTimeout (function () {
+                          basicBot.roomUtilities.booth.unlockBooth ();
                         }, 1000);
                       }, 1500, id);
                     }, 1000, id);
-                    return void (0);
+                    retorno void (0);
                   }
                 }
               }
@@ -2611,246 +2611,246 @@
           },
 
           locktimerCommand: {
-            command: 'locktimer',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'locktimer',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var lockTime = msg.substring(cmd.length + 1);
-                if (!isNaN(lockTime) && lockTime !== "") {
-                  pirataBot.settings.maximumLocktime = lockTime;
-                  return API.sendChat(subChat(pirataBot.chat.lockguardtime, {name: chat.un, time: pirataBot.settings.maximumLocktime}));
+                var locktime = msg.substring (cmd.length + 1);
+                if (! isNaN (locktime) && locktime! == "") {
+                  basicBot.settings.maximumLocktime = locktime;
+                  retornar API.sendChat (subChat (basicBot.chat.lockguardtime, {name: chat.un, tempo: basicBot.settings.maximumLocktime}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.invalidtime, {name: chat.un}));
               }
             }
           },
 
           logoutCommand: {
-            command: 'logout',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(subChat(pirataBot.chat.logout, {name: chat.un, botname: pirataBot.settings.botName}));
-                setTimeout(function () {
-                  $(".logout").mousedown()
+            comando: 'Sair',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (subChat (basicBot.chat.logout, {name: chat.un, botname: basicBot.settings.botName}));
+                setTimeout (function () {
+                  $ (". Logout"). Mousedown ()
                 }, 1000);
               }
             }
           },
 
           maxlengthCommand: {
-            command: 'maxlength',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: "maxlength",
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var maxTime = msg.substring(cmd.length + 1);
-                if (!isNaN(maxTime)) {
-                  pirataBot.settings.maximumSongLength = maxTime;
-                  return API.sendChat(subChat(pirataBot.chat.maxlengthtime, {name: chat.un, time: pirataBot.settings.maximumSongLength}));
+                var MaxTime = msg.substring (cmd.length + 1);
+                if (! isNaN (MaxTime)) {
+                  basicBot.settings.maximumSongLength = MaxTime;
+                  retornar API.sendChat (subChat (basicBot.chat.maxlengthtime, {name: chat.un, tempo: basicBot.settings.maximumSongLength}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.invalidtime, {name: chat.un}));
               }
             }
           },
 
           motdCommand: {
-            command: 'motd',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'motd',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length <= cmd.length + 1) return API.sendChat('/me MotD: ' + pirataBot.settings.motd);
-                var argument = msg.substring(cmd.length + 1);
-                if (!pirataBot.settings.motdEnabled) pirataBot.settings.motdEnabled = !pirataBot.settings.motdEnabled;
-                if (isNaN(argument)) {
-                  pirataBot.settings.motd = argument;
-                  API.sendChat(subChat(pirataBot.chat.motdset, {msg: pirataBot.settings.motd}));
+                if (msg.length <= cmd.length + 1) API.sendChat retorno ('/ motd me:' + basicBot.settings.motd);
+                argumento var = msg.substring (cmd.length + 1);
+                se basicBot.settings.motdEnabled = basicBot.settings.motdEnabled (basicBot.settings.motdEnabled!!);
+                if (isNaN (argumento)) {
+                  basicBot.settings.motd = argumento;
+                  API.sendChat (subChat (basicBot.chat.motdset, {msg: basicBot.settings.motd}));
                 }
-                else {
-                  pirataBot.settings.motdInterval = argument;
-                  API.sendChat(subChat(pirataBot.chat.motdintervalset, {interval: pirataBot.settings.motdInterval}));
+                outro {
+                  basicBot.settings.motdInterval = argumento;
+                  API.sendChat (subChat (basicBot.chat.motdintervalset, {intervalo: basicBot.settings.motdInterval}));
                 }
               }
             }
           },
 
           moveCommand: {
-            command: 'move',
-            rank: 'mod',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'move',
+            classificação: 'mod',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var firstSpace = msg.indexOf(' ');
-                var lastSpace = msg.lastIndexOf(' ');
-                var pos;
-                var name;
-                if (isNaN(parseInt(msg.substring(lastSpace + 1)))) {
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var firstSpace msg.indexOf = ('');
+                var lastSpace msg.lastIndexOf = ('');
+                pos var;
+                var nome;
+                se (isNaN (parselnt (msg.substring (lastSpace + 1)))) {
                   pos = 1;
-                  name = msg.substring(cmd.length + 2);
+                  name = msg.substring (cmd.length + 2);
                 }
-                else {
-                  pos = parseInt(msg.substring(lastSpace + 1));
-                  name = msg.substring(cmd.length + 2, lastSpace);
+                outro {
+                  pos = parseInt (msg.substring (lastSpace + 1));
+                  name = msg.substring (cmd.length + 2, lastSpace);
                 }
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                if (user.id === pirataBot.loggedInID) return API.sendChat(subChat(pirataBot.chat.addbotwaitlist, {name: chat.un}));
-                if (!isNaN(pos)) {
-                  API.sendChat(subChat(pirataBot.chat.move, {name: chat.un}));
-                  pirataBot.userUtilities.moveUser(user.id, pos, false);
-                } else return API.sendChat(subChat(pirataBot.chat.invalidpositionspecified, {name: chat.un}));
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                if (user.id === basicBot.loggedInID) API.sendChat retorno (subChat (basicBot.chat.addbotwaitlist, {name: chat.un}));
+                if (! isNaN (pos)) {
+                  API.sendChat (subChat (basicBot.chat.move, {name: chat.un}));
+                  basicBot.userUtilities.moveUser (user.id, pos, false);
+                } Else API.sendChat retorno (subChat (basicBot.chat.invalidpositionspecified, {name: chat.un}));
               }
             }
           },
 
           muteCommand: {
-            command: 'mute',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'mute',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var lastSpace = msg.lastIndexOf(' ');
-                var time = null;
-                var name;
-                if (lastSpace === msg.indexOf(' ')) {
-                  name = msg.substring(cmd.length + 2);
-                  time = 45;
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var lastSpace msg.lastIndexOf = ('');
+                var tempo = null;
+                var nome;
+                se (lastSpace === msg.indexOf ('')) {
+                  name = msg.substring (cmd.length + 2);
+                  tempo = 45;
                 }
-                else {
-                  time = msg.substring(lastSpace + 1);
-                  if (isNaN(time) || time == "" || time == null || typeof time == "undefined") {
-                    return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                outro {
+                  tempo = msg.substring (lastSpace + 1);
+                  if (isNaN (tempo) || tempo == "" || tempo == null || typeof tempo == "undefined") {
+                    retornar API.sendChat (subChat (basicBot.chat.invalidtime, {name: chat.un}));
                   }
-                  name = msg.substring(cmd.length + 2, lastSpace);
+                  name = msg.substring (cmd.length + 2, lastSpace);
                 }
                 var from = chat.un;
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
-                var permFrom = pirataBot.userUtilities.getPermission(chat.uid);
-                var permUser = pirataBot.userUtilities.getPermission(user.id);
-                if (permFrom > permUser) {
-                  /*
-                  pirataBot.room.mutedUsers.push(user.id);
-                  if (time === null) API.sendChat(subChat(pirataBot.chat.mutednotime, {name: chat.un, username: name}));
-                  else {
-                  API.sendChat(subChat(pirataBot.chat.mutedtime, {name: chat.un, username: name, time: time}));
-                  setTimeout(function (id) {
-                  var muted = pirataBot.room.mutedUsers;
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
+                var permFrom = basicBot.userUtilities.getPermission (chat.uid);
+                var permUser = basicBot.userUtilities.getPermission (user.id);
+                se (permFrom> permUser) {
+                  / *
+                  basicBot.room.mutedUsers.push (user.id);
+                  if (tempo === null) API.sendChat (subChat (basicBot.chat.mutednotime, {name: chat.un, nome de usuário: nome}));
+                  outro {
+                  API.sendChat (subChat (basicBot.chat.mutedtime, {name: chat.un, nome de usuário: nome, tempo: time}));
+                  setTimeout (function (id) {
+                  var silenciado = basicBot.room.mutedUsers;
                   var wasMuted = false;
                   var indexMuted = -1;
-                  for (var i = 0; i < muted.length; i++) {
-                  if (muted[i] === id) {
+                  for (var i = 0; i <muted.length; i ++) {
+                  if (silenciado id [i] ===) {
                   indexMuted = i;
                   wasMuted = true;
                   }
                   }
-                  if (indexMuted > -1) {
-                  pirataBot.room.mutedUsers.splice(indexMuted);
-                  var u = pirataBot.userUtilities.lookupUser(id);
+                  se (indexMuted> -1) {
+                  basicBot.room.mutedUsers.splice (indexMuted);
+                  var u = basicBot.userUtilities.lookupUser (id);
                   var name = u.username;
-                  API.sendChat(subChat(pirataBot.chat.unmuted, {name: chat.un, username: name}));
+                  API.sendChat (subChat (basicBot.chat.unmuted, {name: chat.un, nome de usuário: nome}));
                   }
-                  }, time * 60 * 1000, user.id);
+                  }, Tempo * 60 * 1000, user.id);
                   }
-                  */
-                  if (time > 45) {
-                    API.sendChat(subChat(pirataBot.chat.mutedmaxtime, {name: chat.un, time: "45"}));
-                    API.moderateMuteUser(user.id, 1, API.MUTE.LONG);
+                  * /
+                  if (hora> 45) {
+                    API.sendChat (subChat (basicBot.chat.mutedmaxtime, {name: chat.un, o tempo: "45"}));
+                    API.moderateMuteUser (user.id, 1, API.MUTE.LONG);
                   }
-                  else if (time === 45) {
-                    API.moderateMuteUser(user.id, 1, API.MUTE.LONG);
-                    API.sendChat(subChat(pirataBot.chat.mutedtime, {name: chat.un, username: name, time: time}));
+                  else if (tempo === 45) {
+                    API.moderateMuteUser (user.id, 1, API.MUTE.LONG);
+                    API.sendChat (subChat (basicBot.chat.mutedtime, {name: chat.un, nome de usuário: nome, tempo: time}));
 
                   }
-                  else if (time > 30) {
-                    API.moderateMuteUser(user.id, 1, API.MUTE.LONG);
-                    API.sendChat(subChat(pirataBot.chat.mutedtime, {name: chat.un, username: name, time: time}));
-                    setTimeout(function (id) {
-                      API.moderateUnmuteUser(id);
-                    }, time * 60 * 1000, user.id);
+                  else if (hora> 30) {
+                    API.moderateMuteUser (user.id, 1, API.MUTE.LONG);
+                    API.sendChat (subChat (basicBot.chat.mutedtime, {name: chat.un, nome de usuário: nome, tempo: time}));
+                    setTimeout (function (id) {
+                      API.moderateUnmuteUser (id);
+                    }, Tempo * 60 * 1000, user.id);
                   }
-                  else if (time > 15) {
-                    API.moderateMuteUser(user.id, 1, API.MUTE.MEDIUM);
-                    API.sendChat(subChat(pirataBot.chat.mutedtime, {name: chat.un, username: name, time: time}));
-                    setTimeout(function (id) {
-                      API.moderateUnmuteUser(id);
-                    }, time * 60 * 1000, user.id);
+                  else if (hora> 15) {
+                    API.moderateMuteUser (user.id, 1, API.MUTE.MEDIUM);
+                    API.sendChat (subChat (basicBot.chat.mutedtime, {name: chat.un, nome de usuário: nome, tempo: time}));
+                    setTimeout (function (id) {
+                      API.moderateUnmuteUser (id);
+                    }, Tempo * 60 * 1000, user.id);
                   }
-                  else {
-                    API.moderateMuteUser(user.id, 1, API.MUTE.SHORT);
-                    API.sendChat(subChat(pirataBot.chat.mutedtime, {name: chat.un, username: name, time: time}));
-                    setTimeout(function (id) {
-                      API.moderateUnmuteUser(id);
-                    }, time * 60 * 1000, user.id);
+                  outro {
+                    API.moderateMuteUser (user.id, 1, API.MUTE.SHORT);
+                    API.sendChat (subChat (basicBot.chat.mutedtime, {name: chat.un, nome de usuário: nome, tempo: time}));
+                    setTimeout (function (id) {
+                      API.moderateUnmuteUser (id);
+                    }, Tempo * 60 * 1000, user.id);
                   }
                 }
-                else API.sendChat(subChat(pirataBot.chat.muterank, {name: chat.un}));
+                mais API.sendChat (subChat (basicBot.chat.muterank, {name: chat.un}));
               }
             }
           },
 
-          opCommand: {
-            command: 'op',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.opLink === "string")
-                return API.sendChat(subChat(pirataBot.chat.oplist, {link: pirataBot.settings.opLink}));
+          {: opCommand
+            comando: 'op',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.opLink === "string")
+                retornar API.sendChat (subChat (basicBot.chat.oplist, {link: basicBot.settings.opLink}));
               }
             }
           },
 
           pingCommand: {
-            command: 'ping',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(pirataBot.chat.pong)
+            comando: 'ping',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (basicBot.chat.pong)
               }
             }
           },
 
           refreshCommand: {
-            command: 'refresh',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                sendToSocket();
-                storeToStorage();
-                pirataBot.disconnectAPI();
-                setTimeout(function () {
-                  window.location.reload(false);
+            comando: 'refresh',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                sendToSocket ();
+                storeToStorage ();
+                basicBot.disconnectAPI ();
+                setTimeout (function () {
+                  window.location.reload (false);
                 }, 1000);
 
               }
@@ -2858,166 +2858,166 @@
           },
 
           reloadCommand: {
-            command: 'reload',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat(pirataBot.chat.reload);
-                sendToSocket();
-                storeToStorage();
-                pirataBot.disconnectAPI();
-                kill();
-                setTimeout(function () {
-                  $.getScript(pirataBot.scriptLink);
+            comando: 'recarregar',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat (basicBot.chat.reload);
+                sendToSocket ();
+                storeToStorage ();
+                basicBot.disconnectAPI ();
+                matar ();
+                setTimeout (function () {
+                  $ .getScript (BasicBot.scriptLink);
                 }, 2000);
               }
             }
           },
 
           removeCommand: {
-            command: 'remove',
-            rank: 'mod',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: "remover",
+            classificação: 'mod',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length > cmd.length + 2) {
-                  var name = msg.substr(cmd.length + 2);
-                  var user = pirataBot.userUtilities.lookupUserName(name);
-                  if (typeof user !== 'boolean') {
+                se (msg.length> cmd.length + 2) {
+                  var name = msg.substr (cmd.length + 2);
+                  usuário var = basicBot.userUtilities.lookupUserName (nome);
+                  if (typeof usuário! == 'booleano') {
                     user.lastDC = {
-                      time: null,
-                      position: null,
+                      tempo: nulo,
+                      posição: null,
                       songCount: 0
                     };
-                    if (API.getDJ().id === user.id) {
-                      API.moderateForceSkip();
-                      setTimeout(function () {
-                        API.moderateRemoveDJ(user.id);
-                      }, 1 * 1000, user);
+                    if (API.getDJ (). id === user.id) {
+                      API.moderateForceSkip ();
+                      setTimeout (function () {
+                        API.moderateRemoveDJ (user.id);
+                      }, 1 * 1000, do usuário);
                     }
-                    else API.moderateRemoveDJ(user.id);
-                  } else API.sendChat(subChat(pirataBot.chat.removenotinwl, {name: chat.un, username: name}));
-                } else API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
+                    mais API.moderateRemoveDJ (user.id);
+                  } Else API.sendChat (subChat (basicBot.chat.removenotinwl, {name: chat.un, nome de usuário: nome}));
+                } Else API.sendChat (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
               }
             }
           },
 
           restrictetaCommand: {
-            command: 'restricteta',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.etaRestriction) {
-                  pirataBot.settings.etaRestriction = !pirataBot.settings.etaRestriction;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.etarestriction}));
+            comando: 'restricteta',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.etaRestriction) {
+                  basicBot.settings.etaRestriction = basicBot.settings.etaRestriction!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.etarestriction}));
                 }
-                else {
-                  pirataBot.settings.etaRestriction = !pirataBot.settings.etaRestriction;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.etarestriction}));
+                outro {
+                  basicBot.settings.etaRestriction = basicBot.settings.etaRestriction!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.etarestriction}));
                 }
               }
             }
           },
 
           rouletteCommand: {
-            command: 'roulette',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (!pirataBot.room.roulette.rouletteStatus) {
-                  pirataBot.room.roulette.startRoulette();
+            comando: 'roulette',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.room.roulette.rouletteStatus!) {
+                  basicBot.room.roulette.startRoulette ();
                 }
               }
             }
           },
 
           rulesCommand: {
-            command: 'rules',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.rulesLink === "string")
-                return API.sendChat(subChat(pirataBot.chat.roomrules, {link: pirataBot.settings.rulesLink}));
+            comando: 'regras',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.rulesLink === "string")
+                retornar API.sendChat (subChat (basicBot.chat.roomrules, {link: basicBot.settings.rulesLink}));
               }
             }
           },
 
           sessionstatsCommand: {
-            command: 'sessionstats',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'sessionstats',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var from = chat.un;
-                var woots = pirataBot.room.roomstats.totalWoots;
-                var mehs = pirataBot.room.roomstats.totalMehs;
-                var grabs = pirataBot.room.roomstats.totalCurates;
-                API.sendChat(subChat(pirataBot.chat.sessionstats, {name: from, woots: woots, mehs: mehs, grabs: grabs}));
+                woots var = basicBot.room.roomstats.totalWoots;
+                mehs var = basicBot.room.roomstats.totalMehs;
+                var agarra = basicBot.room.roomstats.totalCurates;
+                API.sendChat (subChat (basicBot.chat.sessionstats, {name: de, woots: woots, mehs: mehs, agarra agarra:}));
               }
             }
           },
 
           skipCommand: {
-            command: ['skip', 'smartskip'],
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.room.skippable) {
+            comando: ['pular', 'smartskip'],
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.room.skippable) {
 
-                  var timeLeft = API.getTimeRemaining();
-                  var timeElapsed = API.getTimeElapsed();
-                  var dj = API.getDJ();
+                  var timeleft = API.getTimeRemaining ();
+                  var timeElapsed API.getTimeElapsed = ();
+                  var dj = API.getDJ ();
                   var name = dj.username;
-                  var msgSend = '@' + name + ', ';
+                  var msgSend = '@' + nome + ',';
 
-                  if (chat.message.length === cmd.length) {
-                    API.sendChat(subChat(pirataBot.chat.usedskip, {name: chat.un}));
-                    if (pirataBot.settings.smartSkip && timeLeft > timeElapsed){
-                      pirataBot.roomUtilities.smartSkip();
+                  se (chat.message.length === cmd.length) {
+                    API.sendChat (subChat (basicBot.chat.usedskip, {name: chat.un}));
+                    if (basicBot.settings.smartSkip && timeleft> timeElapsed) {
+                      basicBot.roomUtilities.smartSkip ();
                     }
-                    else {
-                      API.moderateForceSkip();
+                    outro {
+                      API.moderateForceSkip ();
                     }
                   }
                   var validReason = false;
                   var msg = chat.message;
-                  var reason = msg.substring(cmd.length + 1);
-                  for (var i = 0; i < pirataBot.settings.skipReasons.length; i++) {
-                    var r = pirataBot.settings.skipReasons[i][0];
-                    if (reason.indexOf(r) !== -1) {
+                  var razão = msg.substring (cmd.length + 1);
+                  for (var i = 0; i <basicBot.settings.skipReasons.length; i ++) {
+                    var r = basicBot.settings.skipReasons [i] [0];
+                    se (reason.indexOf (R)! == -1) {
                       validReason = true;
-                      msgSend += pirataBot.settings.skipReasons[i][1];
+                      msgSend + = basicBot.settings.skipReasons [i] [1];
                     }
                   }
-                  if (validReason) {
-                    API.sendChat(subChat(pirataBot.chat.usedskip, {name: chat.un}));
-                    if (pirataBot.settings.smartSkip && timeLeft > timeElapsed){
-                      pirataBot.roomUtilities.smartSkip(msgSend);
+                  se (validReason) {
+                    API.sendChat (subChat (basicBot.chat.usedskip, {name: chat.un}));
+                    if (basicBot.settings.smartSkip && timeleft> timeElapsed) {
+                      basicBot.roomUtilities.smartSkip (msgSend);
                     }
-                    else {
-                      API.moderateForceSkip();
-                      setTimeout(function () {
-                        API.sendChat(msgSend);
+                    outro {
+                      API.moderateForceSkip ();
+                      setTimeout (function () {
+                        API.sendChat (msgSend);
                       }, 500);
                     }
                   }
@@ -3027,233 +3027,233 @@
           },
 
           skipposCommand: {
-            command: 'skippos',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'skippos',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var pos = msg.substring(cmd.length + 1);
-                if (!isNaN(pos)) {
-                  pirataBot.settings.skipPosition = pos;
-                  return API.sendChat(subChat(pirataBot.chat.skippos, {name: chat.un, position: pirataBot.settings.skipPosition}));
+                var pos = msg.substring (cmd.length + 1);
+                if (! isNaN (pos)) {
+                  basicBot.settings.skipPosition = pos;
+                  retornar API.sendChat (subChat (basicBot.chat.skippos, {name: chat.un, posição: basicBot.settings.skipPosition}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.invalidpositionspecified, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.invalidpositionspecified, {name: chat.un}));
               }
             }
           },
 
           songstatsCommand: {
-            command: 'songstats',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.songstats) {
-                  pirataBot.settings.songstats = !pirataBot.settings.songstats;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.songstats}));
+            comando: 'songstats',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (basicBot.settings.songstats) {
+                  ! basicBot.settings.songstats = basicBot.settings.songstats;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.songstats}));
                 }
-                else {
-                  pirataBot.settings.songstats = !pirataBot.settings.songstats;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.songstats}));
+                outro {
+                  ! basicBot.settings.songstats = basicBot.settings.songstats;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.songstats}));
                 }
               }
             }
           },
 
           sourceCommand: {
-            command: 'source',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                API.sendChat('/me This bot was created by ' + botCreator + ', but is now maintained by ' + botMaintainer + ".");
+            comando: 'fonte',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                API.sendChat ('/ me Este bot foi criado por' + botCreator + ', mas agora é mantido por' + botMaintainer + ".");
               }
             }
           },
 
           statusCommand: {
-            command: 'status',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'status',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var from = chat.un;
-                var msg = '[@' + from + '] ';
+                var msg = '[@' + de + ']';
 
-                msg += pirataBot.chat.afkremoval + ': ';
-                if (pirataBot.settings.afkRemoval) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
-                msg += pirataBot.chat.afksremoved + ": " + pirataBot.room.afkList.length + '. ';
-                msg += pirataBot.chat.afklimit + ': ' + pirataBot.settings.maximumAfk + '. ';
+                msg + = basicBot.chat.afkremoval + ':';
+                if (basicBot.settings.afkRemoval) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
+                msg + = basicBot.chat.afksremoved + ":" + basicBot.room.afkList.length + '. ';
+                msg + = basicBot.chat.afklimit + ':' + basicBot.settings.maximumAfk + '. ';
 
-                msg += 'Bouncer+: ';
-                if (pirataBot.settings.bouncerPlus) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = 'Bouncer +:';
+                if (basicBot.settings.bouncerPlus) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.blacklist + ': ';
-                if (pirataBot.settings.blacklistEnabled) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.blacklist + ':';
+                if (basicBot.settings.blacklistEnabled) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.lockguard + ': ';
-                if (pirataBot.settings.lockGuard) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.lockguard + ':';
+                if (basicBot.settings.lockGuard) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.cycleguard + ': ';
-                if (pirataBot.settings.cycleGuard) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.cycleguard + ':';
+                if (basicBot.settings.cycleGuard) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.timeguard + ': ';
-                if (pirataBot.settings.timeGuard) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.timeguard + ':';
+                if (basicBot.settings.timeGuard) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.chatfilter + ': ';
-                if (pirataBot.settings.filterChat) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.chatfilter + ':';
+                if (basicBot.settings.filterChat) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.historyskip + ': ';
-                if (pirataBot.settings.historySkip) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.historyskip + ':';
+                if (basicBot.settings.historySkip) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.voteskip + ': ';
-                if (pirataBot.settings.voteSkip) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.voteskip + ':';
+                if (basicBot.settings.voteSkip) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.cmddeletion + ': ';
-                if (pirataBot.settings.cmdDeletion) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.cmddeletion + ':';
+                if (basicBot.settings.cmdDeletion) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                msg += pirataBot.chat.autoskip + ': ';
-                if (pirataBot.settings.autoskip) msg += 'ON';
-                else msg += 'OFF';
-                msg += '. ';
+                msg + = basicBot.chat.autoskip + ':';
+                if (basicBot.settings.autoskip) msg ​​+ = 'ON';
+                mais msg + = "OFF";
+                msg + = '. ';
 
-                // TODO: Display more toggleable bot settings.
+                // TODO: Mostrar configurações bot mais toggleable.
 
-                var launchT = pirataBot.room.roomstats.launchTime;
-                var durationOnline = Date.now() - launchT;
-                var since = pirataBot.roomUtilities.msToStr(durationOnline);
-                msg += subChat(pirataBot.chat.activefor, {time: since});
+                var launchT = basicBot.room.roomstats.launchTime;
+                var durationOnline = Date.now () - launchT;
+                var desde basicBot.roomUtilities.msToStr = (durationOnline);
+                msg + = subChat (basicBot.chat.activefor, {tempo: desde});
 
-                /*
-                // least efficient way to go about this, but it works :)
-                if (msg.length > 256){
-                firstpart = msg.substr(0, 256);
-                secondpart = msg.substr(256);
-                API.sendChat(firstpart);
-                setTimeout(function () {
-                API.sendChat(secondpart);
+                / *
+                // Maneira menos eficiente de fazer isso, mas funciona :)
+                se (msg.length> 256) {
+                firstpart msg.substr = (0, 256);
+                secondpart = msg.substr (256);
+                API.sendChat (firstpart);
+                setTimeout (function () {
+                API.sendChat (secondpart);
                 }, 300);
                 }
-                else {
-                API.sendChat(msg);
+                outro {
+                API.sendChat (msg);
                 }
-                */
+                * /
 
-                // This is a more efficient solution
-                if (msg.length > 241){
-                  var split = msg.match(/.{1,241}/g);
-                  for (var i = 0; i < split.length; i++) {
-                    var func = function(index) {
-                      setTimeout(function() {
-                        API.sendChat("/me " + split[index]);
-                      }, 500 * index);
+                // Esta é uma solução mais eficiente
+                se (msg.length> 241) {
+                  var = msg.match divisão (/ {1241} / g.);
+                  for (var i = 0; i <split.length; i ++) {
+                    var func = function (índice) {
+                      setTimeout (function () {
+                        API.sendChat ("me /" + divisão [índice]);
+                      }, 500 * índice);
                     }
-                    func(i);
+                    func (i);
                   }
                 }
-                else {
-                  return API.sendChat(msg);
+                outro {
+                  retornar API.sendChat (msg);
                 }
               }
             }
           },
 
           swapCommand: {
-            command: 'swap',
-            rank: 'mod',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'swap ",
+            classificação: 'mod',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var firstSpace = msg.indexOf(' ');
-                var lastSpace = msg.lastIndexOf(' ');
-                var name1 = msg.substring(cmd.length + 2, lastSpace);
-                var name2 = msg.substring(lastSpace + 2);
-                var user1 = pirataBot.userUtilities.lookupUserName(name1);
-                var user2 = pirataBot.userUtilities.lookupUserName(name2);
-                if (typeof user1 === 'boolean' || typeof user2 === 'boolean') return API.sendChat(subChat(pirataBot.chat.swapinvalid, {name: chat.un}));
-                if (user1.id === pirataBot.loggedInID || user2.id === pirataBot.loggedInID) return API.sendChat(subChat(pirataBot.chat.addbottowaitlist, {name: chat.un}));
-                var p1 = API.getWaitListPosition(user1.id) + 1;
-                var p2 = API.getWaitListPosition(user2.id) + 1;
-                if (p1 < 0 || p2 < 0) return API.sendChat(subChat(pirataBot.chat.swapwlonly, {name: chat.un}));
-                API.sendChat(subChat(pirataBot.chat.swapping, {'name1': name1, 'name2': name2}));
-                if (p1 < p2) {
-                  pirataBot.userUtilities.moveUser(user2.id, p1, false);
-                  setTimeout(function (user1, p2) {
-                    pirataBot.userUtilities.moveUser(user1.id, p2, false);
-                  }, 2000, user1, p2);
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var firstSpace msg.indexOf = ('');
+                var lastSpace msg.lastIndexOf = ('');
+                var name1 = msg.substring (cmd.length + 2, lastSpace);
+                var name2 = msg.substring (lastSpace + 2);
+                var = user1 basicBot.userUtilities.lookupUserName (name1);
+                var = user2 basicBot.userUtilities.lookupUserName (name2);
+                if (typeof user1 === 'booleano' || typeof user2 === 'booleano') API.sendChat retorno (subChat (basicBot.chat.swapinvalid, {name: chat.un}));
+                if (user1.id === basicBot.loggedInID || user2.id === basicBot.loggedInID) return API.sendChat (subChat (basicBot.chat.addbottowaitlist, {name: chat.un}));
+                var p1 = API.getWaitListPosition (user1.id) + 1;
+                var p2 = API.getWaitListPosition (user2.id) + 1;
+                if (p1 <0 || p2 <0) return API.sendChat (subChat (basicBot.chat.swapwlonly, {name: chat.un}));
+                API.sendChat (subChat (basicBot.chat.swapping, {'name1': name1 ", name2 ': name2}));
+                Se (P1 <P2) {
+                  basicBot.userUtilities.moveUser (user2.id, p1, false);
+                  setTimeout (function (user1, p2) {
+                    basicBot.userUtilities.moveUser (user1.id, p2, false);
+                  } De 2000, user1, p2);
                 }
-                else {
-                  pirataBot.userUtilities.moveUser(user1.id, p2, false);
-                  setTimeout(function (user2, p1) {
-                    pirataBot.userUtilities.moveUser(user2.id, p1, false);
-                  }, 2000, user2, p1);
+                outro {
+                  basicBot.userUtilities.moveUser (user1.id, p2, false);
+                  setTimeout (function (user2, p1) {
+                    basicBot.userUtilities.moveUser (user2.id, p1, false);
+                  } De 2000, user2, p1);
                 }
               }
             }
           },
 
           themeCommand: {
-            command: 'theme',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.themeLink === "string")
-                API.sendChat(subChat(pirataBot.chat.genres, {link: pirataBot.settings.themeLink}));
+            comando: "tema",
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.themeLink === "string")
+                API.sendChat (subChat (basicBot.chat.genres, {link: basicBot.settings.themeLink}));
               }
             }
           },
 
           timeguardCommand: {
-            command: 'timeguard',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.timeGuard) {
-                  pirataBot.settings.timeGuard = !pirataBot.settings.timeGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.timeguard}));
+            comando: 'TimeGuard',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.timeGuard) {
+                  basicBot.settings.timeGuard = basicBot.settings.timeGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.timeguard}));
                 }
-                else {
-                  pirataBot.settings.timeGuard = !pirataBot.settings.timeGuard;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.timeguard}));
+                outro {
+                  basicBot.settings.timeGuard = basicBot.settings.timeGuard!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.timeguard}));
                 }
 
               }
@@ -3261,95 +3261,95 @@
           },
 
           toggleblCommand: {
-            command: 'togglebl',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                var temp = pirataBot.settings.blacklistEnabled;
-                pirataBot.settings.blacklistEnabled = !temp;
-                if (pirataBot.settings.blacklistEnabled) {
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.blacklist}));
+            comando: 'togglebl',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                var temp = basicBot.settings.blacklistEnabled;
+                ! basicBot.settings.blacklistEnabled = temperatura;
+                se (basicBot.settings.blacklistEnabled) {
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.blacklist}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.blacklist}));
+                mais API.sendChat retorno (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.blacklist}));
               }
             }
           },
 
           togglemotdCommand: {
-            command: 'togglemotd',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.motdEnabled) {
-                  pirataBot.settings.motdEnabled = !pirataBot.settings.motdEnabled;
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.motd}));
+            comando: 'togglemotd',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.motdEnabled) {
+                  basicBot.settings.motdEnabled = basicBot.settings.motdEnabled!;
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.motd}));
                 }
-                else {
-                  pirataBot.settings.motdEnabled = !pirataBot.settings.motdEnabled;
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.motd}));
+                outro {
+                  basicBot.settings.motdEnabled = basicBot.settings.motdEnabled!;
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.motd}));
                 }
               }
             }
           },
 
           togglevoteskipCommand: {
-            command: 'togglevoteskip',
-            rank: 'bouncer',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.voteSkip) {
-                  pirataBot.settings.voteSkip = !pirataBot.settings.voteSkip;
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.voteskip}));
+            comando: 'togglevoteskip',
+            classificação: "leão de chácara",
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.voteSkip) {
+                  basicBot.settings.voteSkip = basicBot.settings.voteSkip!;
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.voteskip}));
                 }
-                else {
-                  pirataBot.settings.voteSkip = !pirataBot.settings.voteSkip;
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.voteskip}));
+                outro {
+                  basicBot.settings.voteSkip = basicBot.settings.voteSkip!;
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.voteskip}));
                 }
               }
             }
           },
 
           unbanCommand: {
-            command: 'unban',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                $(".icon-population").click();
-                $(".icon-ban").click();
-                setTimeout(function (chat) {
+            comando: 'unban',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                $ ("Ícone populacional.") Clique em (.);
+                $ ("Ícone-ban"). Click (.);
+                setTimeout (function (chat) {
                   var msg = chat.message;
-                  if (msg.length === cmd.length) return API.sendChat();
-                  var name = msg.substring(cmd.length + 2);
-                  var bannedUsers = API.getBannedUsers();
+                  if (msg.length === cmd.length) API.sendChat retorno ();
+                  var name = msg.substring (cmd.length + 2);
+                  var bannedUsers API.getBannedUsers = ();
                   var found = false;
                   var bannedUser = null;
-                  for (var i = 0; i < bannedUsers.length; i++) {
-                    var user = bannedUsers[i];
-                    if (user.username === name) {
-                      bannedUser = user;
-                      found = true;
+                  for (var i = 0; i <bannedUsers.length; i ++) {
+                    usuário var = bannedUsers [i];
+                    if (user.username === nome) {
+                      bannedUser = usuário;
+                      encontrado = true;
                     }
                   }
-                  if (!found) {
-                    $(".icon-chat").click();
-                    return API.sendChat(subChat(pirataBot.chat.notbanned, {name: chat.un}));
+                  if (! found) {
+                    . $ (". Icon-chat") clique ();
+                    retornar API.sendChat (subChat (basicBot.chat.notbanned, {name: chat.un}));
                   }
-                  API.moderateUnbanUser(bannedUser.id);
-                  console.log("Unbanned " + name);
-                  setTimeout(function () {
-                    $(".icon-chat").click();
+                  API.moderateUnbanUser (bannedUser.id);
+                  console.log ("Unbanned" + nome);
+                  setTimeout (function () {
+                    . $ (". Icon-chat") clique ();
                   }, 1000);
                 }, 1000, chat);
               }
@@ -3357,261 +3357,261 @@
           },
 
           unlockCommand: {
-            command: 'unlock',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                pirataBot.roomUtilities.booth.unlockBooth();
+            comando: "desbloquear",
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                basicBot.roomUtilities.booth.unlockBooth ();
               }
             }
           },
 
           unmuteCommand: {
-            command: 'unmute',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'unmute',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var permFrom = pirataBot.userUtilities.getPermission(chat.uid);
-                /**
-                if (msg.indexOf('@') === -1 && msg.indexOf('all') !== -1) {
-                if (permFrom > 2) {
-                pirataBot.room.mutedUsers = [];
-                return API.sendChat(subChat(pirataBot.chat.unmutedeveryone, {name: chat.un}));
+                var permFrom = basicBot.userUtilities.getPermission (chat.uid);
+                / **
+                if (msg.indexOf ("@") === -1 && msg.indexOf ('all')! == -1) {
+                if (permFrom> 2) {
+                basicBot.room.mutedUsers = [];
+                retornar API.sendChat (subChat (basicBot.chat.unmutedeveryone, {name: chat.un}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.unmuteeveryonerank, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.unmuteeveryonerank, {name: chat.un}));
                 }
-                **/
+                ** /
                 var from = chat.un;
-                var name = msg.substr(cmd.length + 2);
+                var name = msg.substr (cmd.length + 2);
 
-                var user = pirataBot.userUtilities.lookupUserName(name);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
 
-                if (typeof user === 'boolean') return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
+                if (typeof usuário === 'booleano') API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
 
-                var permUser = pirataBot.userUtilities.getPermission(user.id);
-                if (permFrom > permUser) {
-                  /*
-                  var muted = pirataBot.room.mutedUsers;
+                var permUser = basicBot.userUtilities.getPermission (user.id);
+                se (permFrom> permUser) {
+                  / *
+                  var silenciado = basicBot.room.mutedUsers;
                   var wasMuted = false;
                   var indexMuted = -1;
-                  for (var i = 0; i < muted.length; i++) {
-                  if (muted[i] === user.id) {
+                  for (var i = 0; i <muted.length; i ++) {
+                  if (silenciado [i] === user.id) {
                   indexMuted = i;
                   wasMuted = true;
                   }
 
                   }
-                  if (!wasMuted) return API.sendChat(subChat(pirataBot.chat.notmuted, {name: chat.un}));
-                  pirataBot.room.mutedUsers.splice(indexMuted);
-                  API.sendChat(subChat(pirataBot.chat.unmuted, {name: chat.un, username: name}));
-                  */
-                  try {
-                    API.moderateUnmuteUser(user.id);
-                    API.sendChat(subChat(pirataBot.chat.unmuted, {name: chat.un, username: name}));
+                  if (wasMuted!) return API.sendChat (subChat (basicBot.chat.notmuted, {name: chat.un}));
+                  basicBot.room.mutedUsers.splice (indexMuted);
+                  API.sendChat (subChat (basicBot.chat.unmuted, {name: chat.un, nome de usuário: nome}));
+                  * /
+                  tentar {
+                    API.moderateUnmuteUser (user.id);
+                    API.sendChat (subChat (basicBot.chat.unmuted, {name: chat.un, nome de usuário: nome}));
                   }
                   catch (e) {
-                    API.sendChat(subChat(pirataBot.chat.notmuted, {name: chat.un}));
+                    API.sendChat (subChat (basicBot.chat.notmuted, {name: chat.un}));
                   }
                 }
-                else API.sendChat(subChat(pirataBot.chat.unmuterank, {name: chat.un}));
+                mais API.sendChat (subChat (basicBot.chat.unmuterank, {name: chat.un}));
               }
             }
           },
 
           usercmdcdCommand: {
-            command: 'usercmdcd',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'usercmdcd',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var cd = msg.substring(cmd.length + 1);
-                if (!isNaN(cd)) {
-                  pirataBot.settings.commandCooldown = cd;
-                  return API.sendChat(subChat(pirataBot.chat.commandscd, {name: chat.un, time: pirataBot.settings.commandCooldown}));
+                var cd = msg.substring (cmd.length + 1);
+                if (! isNaN (cd)) {
+                  basicBot.settings.commandCooldown = cd;
+                  retornar API.sendChat (subChat (basicBot.chat.commandscd, {name: chat.un, tempo: basicBot.settings.commandCooldown}));
                 }
-                else return API.sendChat(subChat(pirataBot.chat.invalidtime, {name: chat.un}));
+                mais API.sendChat retorno (subChat (basicBot.chat.invalidtime, {name: chat.un}));
               }
             }
           },
 
           usercommandsCommand: {
-            command: 'usercommands',
-            rank: 'manager',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.usercommandsEnabled) {
-                  API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.usercommands}));
-                  pirataBot.settings.usercommandsEnabled = !pirataBot.settings.usercommandsEnabled;
+            comando: 'usercommands',
+            classificação: 'manager',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.usercommandsEnabled) {
+                  API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.usercommands}));
+                  basicBot.settings.usercommandsEnabled = basicBot.settings.usercommandsEnabled!;
                 }
-                else {
-                  API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.usercommands}));
-                  pirataBot.settings.usercommandsEnabled = !pirataBot.settings.usercommandsEnabled;
+                outro {
+                  API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.usercommands}));
+                  basicBot.settings.usercommandsEnabled = basicBot.settings.usercommandsEnabled!;
                 }
               }
             }
           },
 
           voteratioCommand: {
-            command: 'voteratio',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'voteratio',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length === cmd.length) return API.sendChat(subChat(pirataBot.chat.nouserspecified, {name: chat.un}));
-                var name = msg.substring(cmd.length + 2);
-                var user = pirataBot.userUtilities.lookupUserName(name);
-                if (user === false) return API.sendChat(subChat(pirataBot.chat.invaliduserspecified, {name: chat.un}));
+                if (msg.length === cmd.length) API.sendChat retorno (subChat (basicBot.chat.nouserspecified, {name: chat.un}));
+                var name = msg.substring (cmd.length + 2);
+                usuário var = basicBot.userUtilities.lookupUserName (nome);
+                if (usuário === false) API.sendChat retorno (subChat (basicBot.chat.invaliduserspecified, {name: chat.un}));
                 var vratio = user.votes;
-                var ratio = vratio.woot / vratio.meh;
-                API.sendChat(subChat(pirataBot.chat.voteratio, {name: chat.un, username: name, woot: vratio.woot, mehs: vratio.meh, ratio: ratio.toFixed(2)}));
+                rácio var = vratio.woot / vratio.meh;
+                API.sendChat (subChat (basicBot.chat.voteratio, {name: chat.un, nome de usuário: nome, woot: vratio.woot, mehs: vratio.meh, razão: ratio.toFixed (2)}));
               }
             }
           },
 
           voteskipCommand: {
-            command: 'voteskip',
-            rank: 'manager',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'voteskip',
+            classificação: 'manager',
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                if (msg.length <= cmd.length + 1) return API.sendChat(subChat(pirataBot.chat.voteskiplimit, {name: chat.un, limit: pirataBot.settings.voteSkipLimit}));
-                var argument = msg.substring(cmd.length + 1);
-                if (!pirataBot.settings.voteSkip) pirataBot.settings.voteSkip = !pirataBot.settings.voteSkip;
-                if (isNaN(argument)) {
-                  API.sendChat(subChat(pirataBot.chat.voteskipinvalidlimit, {name: chat.un}));
+                if (msg.length <= cmd.length + 1) retorno API.sendChat (subChat (basicBot.chat.voteskiplimit, {name: chat.un, limite: basicBot.settings.voteSkipLimit}));
+                argumento var = msg.substring (cmd.length + 1);
+                se basicBot.settings.voteSkip = basicBot.settings.voteSkip (basicBot.settings.voteSkip!!);
+                if (isNaN (argumento)) {
+                  API.sendChat (subChat (basicBot.chat.voteskipinvalidlimit, {name: chat.un}));
                 }
-                else {
-                  pirataBot.settings.voteSkipLimit = argument;
-                  API.sendChat(subChat(pirataBot.chat.voteskipsetlimit, {name: chat.un, limit: pirataBot.settings.voteSkipLimit}));
+                outro {
+                  basicBot.settings.voteSkipLimit = argumento;
+                  API.sendChat (subChat (basicBot.chat.voteskipsetlimit, {name: chat.un, limite: basicBot.settings.voteSkipLimit}));
                 }
               }
             }
           },
 
           welcomeCommand: {
-            command: 'welcome',
-            rank: 'mod',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (pirataBot.settings.welcome) {
-                  pirataBot.settings.welcome = !pirataBot.settings.welcome;
-                  return API.sendChat(subChat(pirataBot.chat.toggleoff, {name: chat.un, 'function': pirataBot.chat.welcomemsg}));
+            comando: 'bem-vindo',
+            classificação: 'mod',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                se (basicBot.settings.welcome) {
+                  basicBot.settings.welcome = basicBot.settings.welcome!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleoff, {name: chat.un, 'função': basicBot.chat.welcomemsg}));
                 }
-                else {
-                  pirataBot.settings.welcome = !pirataBot.settings.welcome;
-                  return API.sendChat(subChat(pirataBot.chat.toggleon, {name: chat.un, 'function': pirataBot.chat.welcomemsg}));
+                outro {
+                  basicBot.settings.welcome = basicBot.settings.welcome!;
+                  retornar API.sendChat (subChat (basicBot.chat.toggleon, {name: chat.un, 'função': basicBot.chat.welcomemsg}));
                 }
               }
             }
           },
 
           websiteCommand: {
-            command: 'website',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.website === "string")
-                API.sendChat(subChat(pirataBot.chat.website, {link: pirataBot.settings.website}));
+            comando: 'site',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.website === "string")
+                API.sendChat (subChat (basicBot.chat.website, {link: basicBot.settings.website}));
               }
             }
           },
 
           whoisCommand: {
-            command: 'whois',
-            rank: 'bouncer',
-            type: 'startsWith',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
+            comando: 'whois',
+            classificação: "leão de chácara",
+            digite: 'startsWith',
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
                 var msg = chat.message;
-                var name;
+                var nome;
                 if (msg.length === cmd.length) name = chat.un;
-                else {
-                  name = msg.substr(cmd.length + 2);
+                outro {
+                  name = msg.substr (cmd.length + 2);
                 }
-                users = API.getUsers();
+                users = API.getUsers ();
                 var len = users.length;
-                for (var i = 0; i < len; ++i){
-                  if (users[i].username == name){
-                    var id = users[i].id;
-                    var avatar = API.getUser(id).avatarID;
-                    var level = API.getUser(id).level;
-                    var rawjoined = API.getUser(id).joined;
-                    var joined = rawjoined.substr(0, 10);
-                    var rawlang = API.getUser(id).language;
-                    if (rawlang == "en"){
-                      var language = "portuguese";
-                    } else if (rawlang == "bg"){
-                      var language = "Bulgarian";
-                    } else if (rawlang == "cs"){
-                      var language = "Czech";
-                    } else if (rawlang == "fi"){
-                      var language = "Finnish"
-                    } else if (rawlang == "fr"){
-                      var language = "French"
-                    } else if (rawlang == "pt"){
-                      var language = "Portuguese"
-                    } else if (rawlang == "zh"){
-                      var language = "Chinese"
-                    } else if (rawlang == "sk"){
-                      var language = "Slovak"
-                    } else if (rawlang == "nl"){
-                      var language = "Dutch"
-                    } else if (rawlang == "ms"){
-                      var language = "Malay"
+                for (var i = 0; i <len; ++ i) {
+                  if (usuários [i] == .username nome) {
+                    var id = usuários [i] .id;
+                    var avatar API.getUser = (id) .avatarID;
+                    nível var = API.getUser (id) .level;
+                    var rawjoined = API.getUser (id) .joined;
+                    var juntou = rawjoined.substr (0, 10);
+                    var rawlang = API.getUser (id) .language;
+                    se (== rawlang "en") {
+                      língua var = "português";
+                    } Else if (rawlang == "bg") {
+                      língua var = "Búlgaro";
+                    } Else if (rawlang == "cs") {
+                      língua var = "Checo";
+                    } Else if (rawlang == "fi") {
+                      língua var = "Finnish"
+                    } Else if (rawlang == "fr") {
+                      língua var = "Francês"
+                    } Else if (rawlang == "pt") {
+                      língua var = "Português"
+                    } Else if (rawlang == "zh") {
+                      língua var = "chinês"
+                    } Else if (rawlang == "sk") {
+                      língua var = "Slovak"
+                    } Else if (rawlang == "nl") {
+                      língua var = "Dutch"
+                    } Else if (rawlang == "") {ms
+                      língua var = "Malay"
                     }
-                    var rawrank = API.getUser(id).role;
-                    if (rawrank == "0"){
-                      var rank = "User";
-                    } else if (rawrank == "1"){
+                    var rawrank = API.getUser (id) .role;
+                    se (rawrank == "0") {
+                      var rank = "Usuário";
+                    } Else if (rawrank == "1") {
                       var rank = "Resident DJ";
-                    } else if (rawrank == "2"){
+                    } Else if (rawrank == "2") {
                       var rank = "Bouncer";
-                    } else if (rawrank == "3"){
-                      var rank = "Manager"
-                    } else if (rawrank == "4"){
-                      var rank = "Co-Host"
-                    } else if (rawrank == "5"){
-                      var rank = "Host"
-                    } else if (rawrank == "7"){
-                      var rank = "Brand Ambassador"
-                    } else if (rawrank == "10"){
-                      var rank = "Admin"
+                    } Else if (rawrank == "3") {
+                      Rank var = "Manager"
+                    } Else if (rawrank == "4") {
+                      Rank var = "Co-Host"
+                    } Else if (rawrank == "5") {
+                      Rank var = "Host"
+                    } Else if (rawrank == "7") {
+                      Rank var = "embaixador da marca"
+                    } Else if (rawrank == "10") {
+                      Rank var = "Admin"
                     }
-                    var slug = API.getUser(id).slug;
-                    if (typeof slug !== 'undefined') {
-                      var profile = "https://plug.dj/@/" + slug;
-                    } else {
-                      var profile = "~";
+                    var lesma = API.getUser (id) .slug;
+                    if (typeof lesma! == 'indefinido') {
+                      perfil var = "https://plug.dj/@/" + lesma;
+                    } Outro {
+                      perfil var = "~";
                     }
 
-                    API.sendChat(subChat(pirataBot.chat.whois, {name1: chat.un, name2: name, id: id, avatar: avatar, profile: profile, language: language, level: level, joined: joined, rank: rank}));
+                    API.sendChat (subChat (basicBot.chat.whois, {nome1: chat.un, name2: nome, id: id, avatar: avatar, perfil: perfil, linguagem: a linguagem, nível: nível, juntou-se: se juntou, classificação: classificação }));
                   }
                 }
               }
@@ -3619,20 +3619,20 @@
           },
 
           youtubeCommand: {
-            command: 'youtube',
-            rank: 'user',
-            type: 'exact',
-            functionality: function (chat, cmd) {
-              if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-              if (!pirataBot.commands.executable(this.rank, chat)) return void (0);
-              else {
-                if (typeof pirataBot.settings.youtubeLink === "string")
-                API.sendChat(subChat(pirataBot.chat.youtube, {name: chat.un, link: pirataBot.settings.youtubeLink}));
+            comando: 'youtube',
+            classificação: 'usuário',
+            Tipo: «exacta»,
+            funcionalidade: function (bate-papo, cmd) {
+              if (! this.type === 'exata' && chat.message.length == cmd.length) vazio retorno (0);
+              (! basicBot.commands.executable (this.rank, chat)) se vazio retorno (0);
+              outro {
+                if (typeof basicBot.settings.youtubeLink === "string")
+                API.sendChat (subChat (basicBot.chat.youtube, {name: chat.un, link: basicBot.settings.youtubeLink}));
               }
             }
           }
         }
       };
 
-      loadChat(pirataBot.startup);
-    }).call(this);
+      loadChat (basicBot.startup);
+    .}) Chamada (this);
